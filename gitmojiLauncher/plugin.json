@@ -1,0 +1,24 @@
+{
+    "$schema": "https://github.com/AvengeMedia/DankMaterialShell/raw/refs/heads/master/PLUGINS/plugin-schema.json",
+    "id": "gitmojiLauncher",
+    "name": "Gitmoji Launcher",
+    "description": "Search and copy gitmojis from https://gitmoji.dev",
+    "version": "1.0.1",
+    "author": "lucyfire",
+    "icon": "emoji_language",
+    "type": "launcher",
+    "capabilities": [
+        "gitmoji-search"
+    ],
+    "component": "./GitmojiLauncher.qml",
+    "settings": "./GitmojiLauncherSettings.qml",
+    "trigger": "gm",
+    "requires_dms": ">=0.1.0",
+    "requires": [
+        "wl-copy"
+    ],
+    "permissions": [
+        "settings_read",
+        "settings_write"
+    ]
+}
