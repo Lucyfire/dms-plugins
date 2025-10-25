@@ -15,40 +15,59 @@ Item {
 
     required property var settingsData
 
-    property string wallpaperDir: ""
-    property var wallpapers: {}
+    enum WallpaperState {
+        None,
+        Downloaded,
+        Downloading
+    }
 
+    property bool isLoading: false
+    property var wallpapers: {}
     property string wallpaperSource: "unsplash"
     property list<string> wallpaperSources: ["unsplash",]
     property string wallpaperQuery: ""
 
-    function getCommand() {
+    function fetchWallpapers() {
         const source = root.wallpaperSource;
         const query = root.wallpaperQuery;
         switch (source) {
         case "unsplash":
-        return ["curl", "https://api.unsplash.com/search/photos?per_page=50&query=" + encodeURI(query), "-H", `authorization: Client-ID ${settingsData?.api_unsplash}`,];
+            Proc.runCommand("wallpaperDiscoveryFetch", ["curl", "https://api.unsplash.com/search/photos?per_page=50&query=" + encodeURI(query), "-H", `authorization: Client-ID ${settingsData?.api_unsplash}`], (output, exitCode) => {
+                root.isLoading = false;
+                if (exitCode !== 0) {
+                    ToastService?.showError("Query failed");
+                    console.error("Wallpaper Discovery", output);
+                    return;
+                }
+                const raw = output.trim();
+                try {
+                    root.wallpapers = JSON.parse(raw);
+                } catch (e) {}
+            });
         }
-        return [""];
+        return {};
     }
 
-    function download(id: string, url: string) {
+    function download(filename: string, url: string): bool {
         const source = root.wallpaperSource;
-        const dir = settingsData?.downloadLocation == "undefined" ? "" : settingsData.downloadLocation;
+        const dir = settingsData?.downloadLocation == undefined ? "" : settingsData.downloadLocation;
         if (dir == "") {
-            if (typeof ToastService !== "undefined") {
-                ToastService.showError("download location is not defined");
-            }
-            return;
+            ToastService?.showError("download location is not defined");
+            return false;
         }
+        const saveDir = Paths.expandTilde(`${dir}/${source}`);
         switch (source) {
         case "unsplash":
-            Quickshell.execDetached(["sh", "-c", `mkdir -p ${dir}/unsplash`]);
-            Quickshell.execDetached(["sh", "-c", `curl '${url}' --output ${dir}/unsplash/${id}.jpeg`]);
+            Paths.mkdir(saveDir);
+            Proc.runCommand("wallpaperDiscoveryDownload", ["sh", "-c", `curl '${url}' --output ${saveDir}/${filename}.jpeg`], (output, exitCode) => {
+                if (exitCode !== 0) {
+                    ToastService?.showError("Download Failed");
+                    return false;
+                }
+                ToastService?.showInfo("Wallpaper saved");
+            });
         }
-        if (typeof ToastService !== "undefined") {
-            ToastService.showInfo("Wallpaper saved");
-        }
+        return true;
     }
 
     property int gridIndex: 0
@@ -84,11 +103,13 @@ Item {
                 height: parent.height
                 placeholderText: "Search for photos"
                 Keys.onReturnPressed: {
-                    wallpaperFetcher.running = true;
+                    root.isLoading = true;
+                    root.fetchWallpapers();
                 }
 
                 Keys.onEnterPressed: {
-                    wallpaperFetcher.running = true;
+                    root.isLoading = true;
+                    root.fetchWallpapers();
                 }
                 onTextEdited: {
                     root.wallpaperQuery = text.trim();
@@ -102,7 +123,8 @@ Item {
                 iconName: "search"
                 iconSize: Theme.iconSizeLarge
                 onClicked: {
-                    wallpaperFetcher.running = true;
+                    root.isLoading = true;
+                    root.fetchWallpapers();
                 }
             }
         }
@@ -110,6 +132,21 @@ Item {
         Item {
             width: parent.width - Theme.spacingS * 2
             height: parent.height - options.height
+
+            BusyIndicator {
+                z: 1000
+                anchors.centerIn: parent
+                running: root.isLoading
+                visible: running
+
+                contentItem: Spinner {}
+                background: Rectangle {
+                    width: parent.parent.width
+                    height: parent.parent.height
+                    anchors.centerIn: parent
+                    color: Qt.rgba(Theme.background.r, Theme.background.g, Theme.background.b, 0.7)
+                }
+            }
 
             DankGridView {
                 id: wallpaperGrid
@@ -119,8 +156,8 @@ Item {
                 cellWidth: width / 2
                 cellHeight: height / 2
                 clip: true
-                enabled: root.active
-                interactive: root.active
+                enabled: !root.isLoading
+                interactive: !root.isLoading
                 boundsBehavior: Flickable.StopAtBounds
                 keyNavigationEnabled: false
                 activeFocusOnTab: false
@@ -143,39 +180,13 @@ Item {
                 model: {
                     switch (root.wallpaperSource) {
                     case "unsplash":
-                        return root.wallpapers.results == "undefined" ? [] : root.wallpapers.results;
+                        if (root.wallpapers?.results == undefined) {
+                            return [];
+                        }
+                        return root.wallpapers.results;
                     }
                     return [];
                 }
-
-                onModelChanged: {
-                    const clampedIndex = model.length > 0 ? Math.min(Math.max(0, gridIndex), model.length - 1) : 0;
-                    if (gridIndex !== clampedIndex) {
-                        gridIndex = clampedIndex;
-                    }
-                }
-
-                onCountChanged: {
-                    if (count > 0) {
-                        const clampedIndex = Math.min(gridIndex, count - 1);
-                        currentIndex = clampedIndex;
-                        positionViewAtIndex(clampedIndex, GridView.Contain);
-                    }
-                    enableAnimation = true;
-                }
-
-                Connections {
-                    target: root
-                    function onGridIndexChanged() {
-                        if (wallpaperGrid.count > 0) {
-                            wallpaperGrid.currentIndex = gridIndex;
-                            if (!enableAnimation) {
-                                wallpaperGrid.positionViewAtIndex(gridIndex, GridView.Contain);
-                            }
-                        }
-                    }
-                }
-
                 delegate: Item {
                     width: wallpaperGrid.cellWidth
                     height: wallpaperGrid.cellHeight
@@ -189,7 +200,7 @@ Item {
                         }
                         return "";
                     }
-                    property bool downloaded: false
+                    property int itemState: WallpaperDiscoveryPopoutContent.WallpaperState.None
                     property bool isSelected: wallpaperGrid.currentIndex === index
 
                     Rectangle {
@@ -201,8 +212,9 @@ Item {
                         clip: true
 
                         Rectangle {
+                            z: 2
                             anchors.fill: parent
-                            color: downloaded ? Qt.rgba(Theme.background.r, Theme.background.g, Theme.background.b, 0.7) : "transparent"
+                            color: itemState == WallpaperDiscoveryPopoutContent.WallpaperState.Downloaded ? Qt.rgba(Theme.background.r, Theme.background.g, Theme.background.b, 0.7) : "transparent"
                             radius: parent.radius
 
                             Behavior on color {
@@ -239,12 +251,21 @@ Item {
 
                         BusyIndicator {
                             anchors.centerIn: parent
-                            running: thumbnailImage.status === Image.Loading
+                            running: thumbnailImage.status === Image.Loading || itemState === WallpaperDiscoveryPopoutContent.WallpaperState.Downloading
                             visible: running
+                            contentItem: Spinner {}
+                            background: Rectangle {
+                                visible: itemState === WallpaperDiscoveryPopoutContent.WallpaperState.Downloading
+                                width: parent.parent.width
+                                height: parent.parent.height
+                                anchors.centerIn: parent
+                                color: Qt.rgba(Theme.background.r, Theme.background.g, Theme.background.b, 0.7)
+                            }
                         }
 
                         MouseArea {
                             id: wallpaperMouseArea
+                            visible: itemState === WallpaperDiscoveryPopoutContent.WallpaperState.None
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
@@ -273,12 +294,10 @@ Item {
                             }
 
                             onClicked: {
-                                gridIndex = index;
-                                if (modelData) {
-                                    switch (root.wallpaperSource) {
-                                    case "unsplash":
-                                        download(modelData.id, modelData.urls.full);
-                                    }
+                                switch (root.wallpaperSource) {
+                                case "unsplash":
+                                    itemState = WallpaperDiscoveryPopoutContent.WallpaperState.Downloading;
+                                    itemState = download(modelData.id, modelData.urls.full) ? WallpaperDiscoveryPopoutContent.WallpaperState.Downloaded : WallpaperDiscoveryPopoutContent.WallpaperState.None;
                                 }
                             }
                         }
@@ -288,11 +307,29 @@ Item {
         }
     }
 
-    Process {
-        id: wallpaperFetcher
-        command: getCommand()
-        stdout: StdioCollector {
-            onStreamFinished: root.wallpapers = JSON.parse(this.text)
+    component Spinner: Rectangle {
+        implicitWidth: 48
+        implicitHeight: 48
+        color: "transparent"
+
+        Canvas {
+            anchors.fill: parent
+            onPaint: {
+                var ctx = getContext("2d");
+                ctx.reset();
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = Theme.primary;
+                ctx.beginPath();
+                ctx.arc(width / 2, height / 2, width / 2 - 4, 0, Math.PI * 1.5);
+                ctx.stroke();
+            }
+            RotationAnimator on rotation {
+                from: 0
+                to: 360
+                duration: 800
+                loops: Animation.Infinite
+                running: parent.running
+            }
         }
     }
 }
