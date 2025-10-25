@@ -6,3 +6,8 @@ A DankMaterialShell launcher plugin that provides quick access Gitmojis.
 
 ![Gitmoji Launcher Screenshot](gitmojiLauncher/screenshot.png)
 
+## 2 Wallpaper Discovery
+
+A DankMaterialShell widget that helps you find and download wallpapers.
+
+![Wallpaper Discovery Screenshot](wallpaperDiscovery/screenshot.png)
