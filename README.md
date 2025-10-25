@@ -11,3 +11,10 @@ A DankMaterialShell launcher plugin that provides quick access Gitmojis.
 A DankMaterialShell widget that helps you find and download wallpapers.
 
 ![Wallpaper Discovery Screenshot](wallpaperDiscovery/screenshot.png)
+
+## 3 Alarm Clock
+
+
+A DankMaterialShell widget modeled after gnome clocks.
+
+![Alarm Clock screenshot](alarmClock/screenshot.png)
