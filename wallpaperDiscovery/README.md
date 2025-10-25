@@ -18,7 +18,8 @@ You will need an API Key. Register at [unsplash.com/developers](https://unsplash
 
 ### From Plugin Registry (Recommended)
 ```bash
-# Coming soon - will be available via DMS plugin manager
+dms plugins install wallpaperDiscovery
+# or install using the plugins tab on DMS settings
 ```
 
 ### Manual Installation
@@ -56,7 +57,7 @@ provider will be in its own subdirectory.
 
 ## Contributing
 
-Found a bug or want to add more characters? Open an issue or submit a pull request!
+Found a bug or want to add more providers? Open an issue or submit a pull request!
 
 ## License
 
