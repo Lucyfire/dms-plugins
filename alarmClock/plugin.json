@@ -1,0 +1,20 @@
+{
+    "$schema": "https://github.com/AvengeMedia/DankMaterialShell/raw/refs/heads/master/PLUGINS/plugin-schema.json",
+    "id": "alarmClock",
+    "name": "Alarm Clock",
+    "description": "An alarm clock widget",
+    "version": "0.1.0",
+    "author": "lucyfire",
+    "icon": "alarm",
+    "type": "widget",
+    "capabilities": [
+        "wallpaper-search"
+    ],
+    "component": "./AlarmClockWidget.qml",
+    "requires_dms": ">=0.2.0",
+    "requires": [],
+    "permissions": [
+        "settings_read",
+        "settings_write"
+    ]
+}
