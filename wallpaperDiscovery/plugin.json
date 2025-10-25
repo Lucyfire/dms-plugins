@@ -3,7 +3,7 @@
     "id": "wallpaperDiscovery",
     "name": "Wallpaper Discovery",
     "description": "Search and download wallpapers",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "lucyfire",
     "icon": "settings",
     "type": "widget",

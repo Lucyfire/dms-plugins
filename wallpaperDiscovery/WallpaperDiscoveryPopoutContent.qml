@@ -27,7 +27,7 @@ Item {
         const query = root.wallpaperQuery;
         switch (source) {
         case "unsplash":
-            return ["curl", `https://api.unsplash.com/search/photos?per_page=50&query=${query}`, "-H", `authorization: Client-ID ${settingsData?.api_unsplash}`,];
+        return ["curl", "https://api.unsplash.com/search/photos?per_page=50&query=" + encodeURI(query), "-H", `authorization: Client-ID ${settingsData?.api_unsplash}`,];
         }
         return [""];
     }
