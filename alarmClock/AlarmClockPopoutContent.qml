@@ -1,19 +1,16 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Effects
-import Quickshell
-import Quickshell.Io
 import qs.Common
-import qs.Modals.FileBrowser
 import qs.Services
 import qs.Widgets
 
-Item {
+Column {
     id: root
 
     required property var settingsData
+
+    spacing: 0
 
     DankTabBar {
         id: alarmTabBar
@@ -38,29 +35,25 @@ Item {
         onTabClicked: index => {
             alarmTabBar.currentIndex = index;
         }
+    }
 
-        AlarmsTab {
-            visible: alarmTabBar.currentIndex == 0
+    AlarmsTab {
+        visible: alarmTabBar.currentIndex == 0
 
-            settingsData: root.settingsData
-            width: parent.width
-            height: parent.height - alarmTabBar.height - Theme.spaceS
+        settingsData: root.settingsData
+        width: parent.width
+        height: parent.height - alarmTabBar.height - Theme.spacingS
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: alarmTabBar.bottom
-            anchors.topMargin: Theme.spacingL
-        }
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
 
-        StopwatchTab {
-            visible: alarmTabBar.currentIndex == 1
+    StopwatchTab {
+        visible: alarmTabBar.currentIndex == 1
 
-            settingsData: root.settingsData
-            width: parent.width
-            height: parent.height - alarmTabBar.height - Theme.spaceS
+        settingsData: root.settingsData
+        width: parent.width
+        height: parent.height - alarmTabBar.height - Theme.spacingS
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: alarmTabBar.bottom
-            anchors.topMargin: Theme.spacingL
-        }
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 }

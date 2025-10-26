@@ -1,8 +1,8 @@
 # Alarm Clock
 
-A DankMaterialShell widget modeled after gnome clocks.
+A DankMaterialShell widget for alarms, stopwatch and timer.
 
-![Alarm Clock screenshot](screenshot.png)
+![Stopwatch screenshot](screenshot.png)
 
 ## Features
 
