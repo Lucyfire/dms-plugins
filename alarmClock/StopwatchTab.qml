@@ -1,13 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Effects
-import Quickshell
-import Quickshell.Io
 import qs.Common
-import qs.Modals.FileBrowser
-import qs.Services
 import qs.Widgets
 
 Item {
@@ -16,16 +10,17 @@ Item {
     required property var settingsData
 
     property real elapsedTime: 0
-    property int state: StopwatchTab.State.None
-    property var startTime: 0
 
+    /**
+     * enum does not work properly
     enum State {
-        None,
-        Running,
-        Paused
+        None = 0,
+        Running = 1,
+        Paused = 2
     }
-
-    // anchors.fill: parent
+    */
+    property int state: 0
+    property var startTime: 0
 
     Timer {
         id: timer
@@ -49,13 +44,10 @@ Item {
         anchors.centerIn: parent
         spacing: 20
 
-        Text {
+        StyledText {
             text: formatTime(elapsedTime)
-            color: "white"
+            color: Theme.primary
             font.pixelSize: 60
-            font.family: "monospace"
-            horizontalAlignment: Text.AlignHCenter
-            anchors.horizontalCenter: parent.horizontalCenter
         }
 
         Row {
@@ -65,35 +57,49 @@ Item {
             DankButton {
                 width: 100
                 text: {
-                    if (state == StopwatchTab.State.None) {
+                    switch (root.state) {
+                    case 0:
                         return "Start";
-                    }
-                    if (state == StopwatchTab.State.Running) {
+                    case 1:
                         return "Pause";
+                    case 2:
+                        return "Resume";
                     }
-                    return "Resume";
                 }
                 onClicked: {
-                    if (state == StopwatchTab.State.None) {
-                        state = StopwatchTab.State.Running;
+                    switch (root.state) {
+                    case 0:
+                        // state = StopwatchTab.State.Running;
+                        root.state = 1;
                         startTime = new Date().getTime();
                         timer.start();
-                    } else if (state == StopwatchTab.State.Running) {
-                        state = StopwatchTab.State.Paused;
+                        break;
+                    case 1:
+                        // state = StopwatchTab.State.Paused;
+                        root.state = 2;
                         timer.stop();
-                    } else if (state == StopwatchTab.State.Paused) {
-                        state = StopwatchTab.State.Running;
-                        startTime = new Date().getTime() - elapsedTime;
+                        break;
+                    case 2:
+                        // state = StopwatchTab.State.Running;
+                        root.state = 1;
+                        startTime = new Date().getTime() - root.elapsedTime;
                         timer.start();
+                        break;
                     }
                 }
             }
 
             DankButton {
-                text: "Lap"
+                text: "Stop"
                 width: 100
-                enabled: state == StopwatchTab.State.None
-                onClicked: console.log("Lap:", formatTime(elapsedTime))
+                visible: root.state != 0
+                color: Theme.error
+                onClicked: {
+                    // state = StopwatchTab.State.None;
+                    root.state = 0;
+                    root.elapsedTime = 0;
+                    timer.stop();
+                }
             }
         }
     }

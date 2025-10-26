@@ -18,8 +18,8 @@ PluginComponent {
         PopoutComponent {
             AlarmClockPopoutContent {
                 settingsData: root.pluginData
-                implicitWidth: popoutWidth
-                implicitHeight: popoutHeight - Theme.spacingS * 2
+                width: popoutWidth
+                height: popoutHeight - Theme.spacingS * 2
             }
         }
     }

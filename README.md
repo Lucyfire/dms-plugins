@@ -15,6 +15,6 @@ A DankMaterialShell widget that helps you find and download wallpapers.
 ## 3 Alarm Clock
 
 
-A DankMaterialShell widget modeled after gnome clocks.
+A DankMaterialShell widget for alarms, stopwatch and timer.
 
 ![Alarm Clock screenshot](alarmClock/screenshot.png)
