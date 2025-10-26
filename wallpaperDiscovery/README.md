@@ -46,7 +46,7 @@ provider will be in its own subdirectory.
 
 ## Requirements
 
-- DankMaterialShell >= 0.2.0
+- DankMaterialShell >= 0.2.4
 - `curl`
 - Wayland compositor (Niri, Hyprland, etc.)
 
