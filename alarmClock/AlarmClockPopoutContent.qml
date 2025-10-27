@@ -10,13 +10,11 @@ Column {
 
     required property var settingsData
 
-    spacing: 0
+    spacing: Theme.spacingL * 2
 
     DankTabBar {
         id: alarmTabBar
         width: parent.width
-        height: 45
-        anchors.horizontalCenter: parent.horizontalCenter
         model: [
             {
                 "text": "Alarms",
