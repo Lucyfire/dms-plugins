@@ -17,4 +17,4 @@ A DankMaterialShell widget that helps you find and download wallpapers.
 
 A DankMaterialShell widget for alarms, stopwatch and timer.
 
-![Alarm Clock screenshot](alarmClock/screenshot.png)
+![Alarm Clock screenshot](alarmClock/alarms.png)
