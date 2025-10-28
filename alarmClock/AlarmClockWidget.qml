@@ -34,6 +34,14 @@ PluginComponent {
                 size: Theme.iconSize
                 anchors.verticalCenter: parent.verticalCenter
             }
+
+            StyledText {
+                anchors.verticalCenter: parent.verticalCenter
+                text: AlarmService.widgetInfo
+                visible: text != ""
+                font.pixelSize: Theme.fontSizeXLarge
+                color: Theme.primary 
+            }
         }
     }
 
@@ -46,6 +54,14 @@ PluginComponent {
                 color: Theme.primary
                 size: Theme.iconSize
                 anchors.horizontalCenter: parent.horizontalCenter
+            }
+            
+            StyledText {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: AlarmService.widgetInfo
+                visible: text != ""
+                font.pixelSize: Theme.fontSizeXLarge
+                color: Theme.primary 
             }
         }
     }

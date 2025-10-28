@@ -10,11 +10,12 @@ Column {
 
     required property var settingsData
 
-    spacing: Theme.spacingL * 2
+    spacing: Theme.spacingL
 
     DankTabBar {
         id: alarmTabBar
         width: parent.width
+        currentIndex: AlarmService.alarmTab
         model: [
             {
                 "text": "Alarms",
@@ -31,7 +32,7 @@ Column {
         ]
 
         onTabClicked: index => {
-            alarmTabBar.currentIndex = index;
+            AlarmService.alarmTab = index;
         }
     }
 
@@ -48,7 +49,6 @@ Column {
     StopwatchTab {
         visible: alarmTabBar.currentIndex == 1
 
-        settingsData: root.settingsData
         width: parent.width
         height: parent.height - alarmTabBar.height - Theme.spacingS
 
