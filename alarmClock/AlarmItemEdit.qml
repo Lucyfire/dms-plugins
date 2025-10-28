@@ -14,6 +14,7 @@ DankFlickable {
     property AlarmService.Alarm alarmItem
 
     signal back
+    signal remove
 
     ColumnLayout {
         anchors.fill: parent
@@ -44,16 +45,15 @@ DankFlickable {
                 onClicked: {
                     alarmItem.setHour(hourText.text);
                     alarmItem.setMinutes(minuteText.text);
+                    alarmItem.toggle();
                     root.back();
                 }
             }
         }
 
-        // Time selectors
         RowLayout {
-            Layout.fillWidth: true
-            // Layout.fillHeight: true
             Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
             spacing: Theme.spacingL
 
             ColumnLayout {
@@ -119,100 +119,69 @@ DankFlickable {
             }
         }
 
-        // Repeat section
-        StyledRect {
+        ColumnLayout {
             Layout.fillWidth: true
-            radius: Theme.cornerRadius
-            // padding: Theme.spacingM
-            color: Theme.surfaceContainer
+            spacing: Theme.spacingM
+            StyledText {
+                text: "Repeat"
+                font.pixelSize: Theme.fontSizeLarge
+                color: Theme.surfaceText
+            }
 
-            ColumnLayout {
-                spacing: Theme.spacingM
-                StyledText {
-                    text: "Repeat"
-                    font.pixelSize: Theme.fontSizeMedium
-                    color: Theme.surfaceText
-                }
-
-                RowLayout {
-                    spacing: Theme.spacingS
-                    Repeater {
-                        model: ["M", "T", "W", "T", "F", "S", "S"]
-                        delegate: DankButton {
-                            required property string modelData
-                            property bool checked: false
-                            text: modelData
-                            color: checked ? Theme.primary : Theme.surfaceText
-                            onClicked: checked = !checked
-                            Layout.preferredWidth: 32
-                            Layout.preferredHeight: 32
+            RowLayout {
+                spacing: Theme.spacingS
+                Repeater {
+                    model: [
+                        {
+                            text: "M",
+                            id: 1
+                        },
+                        {
+                            text: "T",
+                            id: 2
+                        },
+                        {
+                            text: "W",
+                            id: 3
+                        },
+                        {
+                            text: "T",
+                            id: 4
+                        },
+                        {
+                            text: "F",
+                            id: 5
+                        },
+                        {
+                            text: "S",
+                            id: 6
+                        },
+                        {
+                            text: "S",
+                            id: 0
+                        },
+                    ]
+                    delegate: DankButton {
+                        required property var modelData
+                        property bool checked: false
+                        text: modelData.text
+                        color: checked ? Theme.primary : Theme.primarySelected
+                        onClicked: {
+                            checked = !checked;
+                            alarmItem.repeats[modelData.id] = checked;
                         }
+                        Layout.preferredWidth: 32
+                        Layout.preferredHeight: 32
                     }
                 }
             }
         }
 
-        // Name + durations
-        // StyledRect {
-        //     Layout.fillWidth: true
-        //     radius: Theme.cornerRadius
-        //     color: Theme.surfaceContainer
-        //     // padding: Theme.spacingM
-        //
-        //     ColumnLayout {
-        //         spacing: Theme.spacingS
-        //
-        //         RowLayout {
-        //             Layout.fillWidth: true
-        //             DankTextField {
-        //                 text: "Name"
-        //                 leftIconName: "edit"
-        //                 Layout.fillWidth: true
-        //             }
-        //             // StyledText {}
-        //             // DankIcon {
-        //             //     name: "edit"
-        //             // }
-        //         }
-        //
-        //         RowLayout {
-        //             Layout.fillWidth: true
-        //             StyledText {
-        //                 text: "Ring Duration"
-        //                 Layout.fillWidth: true
-        //             }
-        //             // StyledComboBox {
-        //             //     model: ["1 minute", "5 minutes", "10 minutes"]
-        //             //     currentIndex: 1
-        //             // }
-        //         }
-        //
-        //         RowLayout {
-        //             Layout.fillWidth: true
-        //             StyledText {
-        //                 text: "Snooze Duration"
-        //                 Layout.fillWidth: true
-        //             }
-        //             // StyledComboBox {
-        //             //     model: ["5 minutes", "10 minutes", "15 minutes"]
-        //             //     currentIndex: 1
-        //             // }
-        //         }
-        //     }
-        // }
-
-        // Remove button
         DankButton {
             text: "Remove Alarm"
             Layout.fillWidth: true
             color: Theme.error
-            onClicked: console.info("Remove alarm clicked")
+            onClicked: root.remove()
         }
     }
-
-    // StyledRect {
-    //     anchors.fill: parent
-    //     color: Theme.surface
-    //     radius: Theme.cornerRadius
-    // }
 }

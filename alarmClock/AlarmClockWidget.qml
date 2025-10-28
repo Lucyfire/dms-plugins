@@ -29,7 +29,7 @@ PluginComponent {
             spacing: Theme.spacingXS
 
             DankIcon {
-                name: "alarm"
+                name: AlarmService.widgetIcon
                 color: Theme.primary
                 size: Theme.iconSize
                 anchors.verticalCenter: parent.verticalCenter
@@ -50,7 +50,7 @@ PluginComponent {
             spacing: Theme.spacingXS
 
             DankIcon {
-                name: "alarm"
+                name: AlarmService.widgetIcon
                 color: Theme.primary
                 size: Theme.iconSize
                 anchors.horizontalCenter: parent.horizontalCenter

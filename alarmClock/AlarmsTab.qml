@@ -1,5 +1,7 @@
 pragma ComponentBehavior: Bound
 
+import Quickshell
+import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
 import qs.Common
@@ -17,10 +19,18 @@ Item {
     height: parent.height
     width: parent.width
 
+    Connections {
+        target: AlarmService
+
+        function onAlarming() {
+            alarmList.forceLayout();
+        }
+    }
+
     Column {
         width: parent.width - Theme.spacingS * 2
         height: parent.height
-        spacing: 0
+        spacing: Theme.spacingS
 
         AlarmItemEdit {
             width: parent.width
@@ -29,24 +39,44 @@ Item {
 
             onVisibleChanged: {
                 if (visible) {
-                    alarmItem = AlarmService.list[root.selectedIndex]
+                    alarmItem = AlarmService.alarmList[root.selectedIndex];
                 }
             }
 
             onBack: root.showAlarmDetails = false
+            onRemove: {
+                root.showAlarmDetails = false;
+                AlarmService.alarmList.splice(root.selectedIndex, 1);
+            }
+        }
+
+        DankButton {
+            id: createBtn
+            visible: !showAlarmDetails
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Create new alarm"
+
+            onClicked: {
+                root.selectedIndex = AlarmService.addAlarm();
+                root.showAlarmDetails = true;
+            }
         }
 
         DankListView {
             id: alarmList
 
+            clip: true
             visible: !showAlarmDetails
             spacing: Theme.spacingM
 
             width: parent.width * 0.9
-            height: parent.height
+            height: parent.height - createBtn.height - Theme.spacingS * 2
 
             anchors.horizontalCenter: parent.horizontalCenter
-            model: AlarmService.list
+
+            model: ScriptModel {
+                values: [...AlarmService.alarmList]
+            }
             interactive: true
             flickDeceleration: 1500
             maximumFlickVelocity: 2000
@@ -60,12 +90,10 @@ Item {
                 height: 50
 
                 onShowDetails: index => {
-                    root.selectedIndex = index
-                    root.showAlarmDetails = true
+                    root.selectedIndex = index;
+                    root.showAlarmDetails = true;
                 }
             }
         }
-
     }
-
 }
