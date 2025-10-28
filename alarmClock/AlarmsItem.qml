@@ -29,7 +29,7 @@ DankButton {
         anchors.fill: parent
         anchors.leftMargin: Theme.spacingM
         anchors.rightMargin: Theme.spacingM
-        spacing: Theme.spacingM
+        spacing: Theme.spacingL
 
         StyledText {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -39,10 +39,23 @@ DankButton {
             Layout.fillWidth: true
         }
 
+        DankButton {
+            visible: modelData.alarming
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            horizontalPadding: Theme.spacingL
+            text: "Stop sound"
+            backgroundColor: Theme.error
+            onClicked: {
+                modelData.alarming = false;
+                AlarmService.stopAlarm();
+                console.info("aaa", modelData.enabled);
+            }
+        }
+
         DankToggle {
             id: toggle
             width: 30
-            checked: isEnabled
+            checked: modelData.enabled
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             onClicked: {
                 modelData.enabled = checked;
@@ -57,7 +70,9 @@ DankButton {
             iconSize: Theme.iconSizeLarge
             textColor: Theme.error
             backgroundColor: "transparent"
-            onClicked: AlarmService.list.remove(index)
+            onClicked: {
+                AlarmService.alarmList.splice(root.index, 1);
+            }
         }
     }
 }

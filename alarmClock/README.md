@@ -2,13 +2,16 @@
 
 A DankMaterialShell widget for alarms, stopwatch and timer.
 
-![Stopwatch screenshot](screenshot.png)
+![Alarms screenshot](alarms.png)
+
+![Stopwatch screenshot](stopwatch.png)
 
 ## Features
 
-- Set alarms
+- Alarms
+    - Currently there is no persistence of alarms between sessions
 - Stopwatch
-- Timers
+- Timers (coming soon)
 
 ## Installation
 
@@ -28,11 +31,12 @@ cp -r "alarmClock" ~/.config/DankMaterialShell/plugins/
 
 ## Configuration
 
-- Sound?
+- Coming soon
 
 ## Requirements
 
-- DankMaterialShell >= 0.2.0
+- qt6-multimedia (for sound)
+- DankMaterialShell >= 0.2.4
 - Wayland compositor (Niri, Hyprland, etc.)
 
 ## Compatibility

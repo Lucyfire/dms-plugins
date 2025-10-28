@@ -14,7 +14,7 @@ Column {
 
     DankTabBar {
         id: alarmTabBar
-        width: parent.width
+        width: parent.width - Theme.spacingS * 2
         currentIndex: AlarmService.alarmTab
         model: [
             {
@@ -24,11 +24,11 @@ Column {
             {
                 "text": "Stopwatch",
                 "icon": "timer"
-            },
-            {
-                "text": "Timer",
-                "icon": "hourglass_top"
             }
+            // ,{
+            //     "text": "Timer",
+            //     "icon": "hourglass_top"
+            // }
         ]
 
         onTabClicked: index => {
@@ -54,4 +54,13 @@ Column {
 
         anchors.horizontalCenter: parent.horizontalCenter
     }
+
+    // TimerTab {
+    //     visible: alarmTabBar.currentIndex == 2
+    //
+    //     width: parent.width
+    //     height: parent.height - alarmTabBar.height - Theme.spacingS
+    //
+    //     anchors.horizontalCenter: parent.horizontalCenter
+    // }
 }
