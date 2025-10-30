@@ -13,7 +13,7 @@ PluginSettings {
         settingKey: "soundFileLocation"
         label: "Path to alarm audio file"
         description: "The audiofile must be in wav format"
-        defaultValue: Paths.config + "/plugins/Alarm Clock/alarm.wav"
+        defaultValue: Paths.shortenHome(Paths.strip(Qt.resolvedUrl("./alarm.wav")))
     }
 
     DankButton {

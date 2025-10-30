@@ -64,7 +64,7 @@ DankFlickable {
                 }
                 DankTextField {
                     id: hourText
-                    text: String(alarmItem.hour).padStart(2, "0")
+                    text: String(alarmItem?.hour).padStart(2, "0")
                     width: 95
                     height: 60
                     font.pixelSize: Theme.fontSizeXLarge
@@ -105,7 +105,7 @@ DankFlickable {
                 }
                 DankTextField {
                     id: minuteText
-                    text: String(alarmItem.minutes).padStart(2, "0")
+                    text: String(alarmItem?.minutes).padStart(2, "0")
                     width: 95
                     height: 60
                     font.pixelSize: Theme.fontSizeXLarge

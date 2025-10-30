@@ -13,7 +13,7 @@ Column {
     spacing: Theme.spacingL
 
     Component.onCompleted: {
-        AlarmService.alarmSound.source = Paths.toFileUrl(settingsData.soundFileLocation);
+        AlarmService.alarmSound.source = Paths.toFileUrl(Paths.expandTilde(settingsData.soundFileLocation || Paths.strip(Qt.resolvedUrl("./alarm.wav"))));
     }
 
     DankTabBar {
