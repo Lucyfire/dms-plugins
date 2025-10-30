@@ -12,6 +12,7 @@ Singleton {
     property int alarmTab: 0
     property string widgetIcon: "alarm"
     property string widgetInfo: ""
+    property alias alarmSound: alarmSound
 
     signal alarming
 
@@ -165,7 +166,6 @@ Singleton {
 
     SoundEffect {
         id: alarmSound
-        source: Paths.toFileUrl(Paths.config + "/plugins/alarmClock/alarm.wav")
         loops: SoundEffect.Infinite
     }
 

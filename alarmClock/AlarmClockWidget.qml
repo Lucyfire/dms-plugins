@@ -9,7 +9,6 @@ PluginComponent {
     id: root
 
     property var popoutService: null
-    property string selectedPopout: pluginData.selectedPopout || "controlCenter"
 
     popoutWidth: 720
     popoutHeight: 450
@@ -40,7 +39,7 @@ PluginComponent {
                 text: AlarmService.widgetInfo
                 visible: text != ""
                 font.pixelSize: Theme.fontSizeXLarge
-                color: Theme.primary 
+                color: Theme.primary
             }
         }
     }
@@ -55,13 +54,13 @@ PluginComponent {
                 size: Theme.iconSize
                 anchors.horizontalCenter: parent.horizontalCenter
             }
-            
+
             StyledText {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: AlarmService.widgetInfo
                 visible: text != ""
                 font.pixelSize: Theme.fontSizeXLarge
-                color: Theme.primary 
+                color: Theme.primary
             }
         }
     }

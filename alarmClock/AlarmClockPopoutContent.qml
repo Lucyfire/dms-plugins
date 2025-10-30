@@ -12,6 +12,10 @@ Column {
 
     spacing: Theme.spacingL
 
+    Component.onCompleted: {
+        AlarmService.alarmSound.source = Paths.toFileUrl(settingsData.soundFileLocation);
+    }
+
     DankTabBar {
         id: alarmTabBar
         width: parent.width - Theme.spacingS * 2

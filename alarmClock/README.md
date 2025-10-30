@@ -31,7 +31,7 @@ cp -r "alarmClock" ~/.config/DankMaterialShell/plugins/
 
 ## Configuration
 
-- Coming soon
+- set the path to the alarm audio file in the plugins settings, it must be in .wav format
 
 ## Requirements
 

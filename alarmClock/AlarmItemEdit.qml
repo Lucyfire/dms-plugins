@@ -76,6 +76,13 @@ DankFlickable {
                     onEditingFinished: {
                         alarmItem.setHour(text);
                     }
+
+                    onAccepted: {
+                        alarmItem.setHour(hourText.text);
+                        alarmItem.setMinutes(minuteText.text);
+                        alarmItem.toggle();
+                        root.back();
+                    }
                 }
                 DankButton {
                     width: 95
@@ -109,6 +116,12 @@ DankFlickable {
                     }
                     onEditingFinished: {
                         alarmItem.setMinutes(text);
+                    }
+                    onAccepted: {
+                        alarmItem.setHour(hourText.text);
+                        alarmItem.setMinutes(minuteText.text);
+                        alarmItem.toggle();
+                        root.back();
                     }
                 }
                 DankButton {

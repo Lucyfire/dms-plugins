@@ -43,18 +43,17 @@ DankButton {
             visible: modelData.alarming
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalPadding: Theme.spacingL
+            iconName: "stop_circle"
             text: "Stop sound"
             backgroundColor: Theme.error
             onClicked: {
                 modelData.alarming = false;
                 AlarmService.stopAlarm();
-                console.info("aaa", modelData.enabled);
             }
         }
 
         DankToggle {
             id: toggle
-            width: 30
             checked: modelData.enabled
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             onClicked: {
@@ -63,7 +62,7 @@ DankButton {
         }
 
         DankButton {
-            width: 20
+            width: 30
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             horizontalPadding: Theme.spacingS
             iconName: "delete_forever"
