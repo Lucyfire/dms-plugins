@@ -619,9 +619,10 @@ Item {
             const gitmoji = gitmojiDatabase[i];
             if (!query || gitmoji.name.toLowerCase().includes(lowerQuery) || gitmoji.emoji.includes(query) || gitmoji.description.includes(lowerQuery)) {
                 items.push({
-                    name: gitmoji.emoji + "  " + gitmoji.name,
+                    name: gitmoji.name,
                     comment: gitmoji.description,
                     action: "copy:" + gitmoji.code,
+                    icon: "unicode:" + gitmoji.emoji,
                     categories: ["Gitmoji Launcher"]
                 });
             }

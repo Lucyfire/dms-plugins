@@ -3,7 +3,7 @@
     "id": "gitmojiLauncher",
     "name": "Gitmoji Launcher",
     "description": "Search and copy gitmojis from https://gitmoji.dev",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "author": "lucyfire",
     "icon": "emoji_language",
     "type": "launcher",
