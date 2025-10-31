@@ -6,7 +6,7 @@ Item {
     id: root
 
     property var pluginService: null
-    property string trigger: ":"
+    property string trigger: "gm"
 
     signal itemsChanged
 
@@ -607,7 +607,7 @@ Item {
 
     Component.onCompleted: {
         if (pluginService) {
-            trigger = pluginService.loadPluginData("gitmojiLauncher", "trigger", "gm");
+            trigger = pluginService.loadPluginData("gitmojiLauncher", "trigger", root.trigger);
         }
     }
 
@@ -642,9 +642,7 @@ Item {
 
         if (actionType === "copy") {
             Quickshell.execDetached(["sh", "-c", "echo -n '" + actionData + "' | wl-copy"]);
-            if (typeof ToastService !== "undefined") {
-                ToastService.showInfo("Copied " + actionData + " to clipboard");
-            }
+            ToastService?.showInfo("Copied " + actionData + " to clipboard");
         }
     }
 

@@ -3,7 +3,7 @@
     "id": "gitmojiLauncher",
     "name": "Gitmoji Launcher",
     "description": "Search and copy gitmojis from https://gitmoji.dev",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "author": "lucyfire",
     "icon": "emoji_language",
     "type": "launcher",
@@ -13,7 +13,7 @@
     "component": "./GitmojiLauncher.qml",
     "settings": "./GitmojiLauncherSettings.qml",
     "trigger": "gm",
-    "requires_dms": ">=0.1.0",
+    "requires_dms": ">=0.2.4",
     "requires": [
         "wl-copy"
     ],
