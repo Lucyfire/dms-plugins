@@ -2,6 +2,7 @@ pragma Singleton
 pragma ComponentBehavior: Bound
 
 import Quickshell
+import Quickshell.Io
 import QtQuick
 import QtMultimedia
 import qs.Common
@@ -10,11 +11,12 @@ Singleton {
     id: root
 
     property int alarmTab: 0
+    readonly property string metadataPath: Paths.cache + "/alarmClock.json"
     property string widgetIcon: "alarm"
     property string widgetInfo: ""
     property alias alarmSound: alarmSound
 
-    signal alarming
+    signal alarming(Alarm alarm)
 
     // Alarm Tab
     readonly property list<Alarm> alarmList: []
@@ -35,6 +37,14 @@ Singleton {
     }
 
     Component.onCompleted: {
+        try {
+            const metadata = JSON.parse(alarmsMetadata.text());
+            for (const alarmData of metadata?.alarms) {
+                const alarm = alarmComp.createObject(root);
+                alarm.fromMetadata(alarmData);
+                root.alarmList.push(alarm);
+            }
+        } catch (e) {}
         console.info("alarmClock:", "Alarm Service initiated");
     }
 
@@ -52,6 +62,7 @@ Singleton {
     function addAlarm(): int {
         const alarm = alarmComp.createObject(root);
         root.alarmList.push(alarm);
+        root.updateMetadata();
         return root.alarmList.length - 1;
     }
 
@@ -71,10 +82,10 @@ Singleton {
         property bool alarming: false
 
         property var repeats: {
-            0: false // Sunday
-            ,
-            1: false // Monday
-            ,
+            // Sunday
+            0: false,
+            // Monday
+            1: false,
             2: false,
             3: false,
             4: false,
@@ -113,9 +124,10 @@ Singleton {
             return String(alarm.hour).padStart(2, "0") + ":" + String(alarm.minutes).padStart(2, "0");
         }
 
-        function toggle() {
-            if (alarm.enabled) {
-                alarm.enabled = false;
+        function setEnabled(enabled: bool) {
+            alarm.enabled = enabled;
+            root.updateMetadata();
+            if (!enabled) {
                 return;
             }
             alarm.enabled = true;
@@ -132,9 +144,9 @@ Singleton {
         }
 
         function shouldAlarm(): bool {
-            const isRepeating = alarm.repeats[0] || alarm.repeats[1] || alarm.repeats[2] || alarm.repeats[3] || alarm.repeats[4] || alarm.repeats[5] || alarm.repeats[6];
             const currentDate = new Date();
 
+            const isRepeating = alarm.repeats[0] || alarm.repeats[1] || alarm.repeats[2] || alarm.repeats[3] || alarm.repeats[4] || alarm.repeats[5] || alarm.repeats[6];
             if (isRepeating && !alarm.repeats[currentDate.getDay()]) {
                 return false;
             }
@@ -149,16 +161,41 @@ Singleton {
             return false;
         }
 
+        function compact(): var {
+            return {
+                name,
+                enabled,
+                hour,
+                minutes,
+                repeats
+            };
+        }
+
+        function fromMetadata(data: var) {
+            alarm.name = data?.name || "";
+            alarm.hour = data?.hour || 0;
+            alarm.minutes = data?.minutes || 0;
+            alarm.enabled = data?.enabled || false;
+            if (data?.repeats) {
+                alarm.repeats = data.repeats;
+            }
+        }
+
         readonly property Timer timer: Timer {
             running: alarm.enabled
             interval: 1000
             repeat: true
             onTriggered: {
                 if (alarm.shouldAlarm()) {
-                    alarm.enabled = false;
+                    const isRepeating = alarm.repeats[0] || alarm.repeats[1] || alarm.repeats[2] || alarm.repeats[3] || alarm.repeats[4] || alarm.repeats[5] || alarm.repeats[6];
+                    if (!isRepeating) {
+                        alarm.enabled = false;
+                    } else {
+                        alarm.setDay(alarm.day+1)
+                    }
                     alarm.alarming = true;
                     alarmSound.play();
-                    root.alarming();
+                    root.alarming(alarm);
                 }
             }
         }
@@ -225,5 +262,23 @@ Singleton {
             root.elapsedTime = new Date().getTime() - root.startTime;
             updateWidget();
         }
+    }
+
+    FileView {
+        id: alarmsMetadata
+        path: root.metadataPath
+        blockLoading: true
+        blockWrites: true
+        atomicWrites: true
+    }
+
+    function updateMetadata() {
+        const metadata = {
+            alarms: []
+        };
+        for (const alarm of root.alarmList) {
+            metadata.alarms.push(alarm.compact());
+        }
+        alarmsMetadata.setText(JSON.stringify(metadata, null, 2));
     }
 }

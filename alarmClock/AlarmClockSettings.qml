@@ -31,7 +31,7 @@ PluginSettings {
 
     SoundEffect {
         id: testSound
-        source: Paths.toFileUrl(audioLocation.value)
+        source: Paths.toFileUrl(Paths.expandTilde(audioLocation.value))
         loops: 0
     }
 }

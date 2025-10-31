@@ -33,15 +33,10 @@ Item {
         spacing: Theme.spacingS
 
         AlarmItemEdit {
+            id: alarmItemEdit
             width: parent.width
             height: parent.height
             visible: showAlarmDetails
-
-            onVisibleChanged: {
-                if (visible) {
-                    alarmItem = AlarmService.alarmList[root.selectedIndex];
-                }
-            }
 
             onBack: root.showAlarmDetails = false
             onRemove: {
@@ -58,6 +53,7 @@ Item {
 
             onClicked: {
                 root.selectedIndex = AlarmService.addAlarm();
+                alarmItemEdit.setAlarm(AlarmService.alarmList[root.selectedIndex]);
                 root.showAlarmDetails = true;
             }
         }
@@ -91,6 +87,7 @@ Item {
 
                 onShowDetails: index => {
                     root.selectedIndex = index;
+                    alarmItemEdit.setAlarm(AlarmService.alarmList[root.selectedIndex]);
                     root.showAlarmDetails = true;
                 }
             }

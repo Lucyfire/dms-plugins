@@ -36,7 +36,15 @@ DankButton {
             text: modelData.text()
             font.pixelSize: Theme.fontSizeXLarge
             color: isEnabled ? Theme.primary : Theme.surfaceText
+        }
+
+        StyledText {
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            text: modelData.name
+            font.pixelSize: Theme.fontSizeXLarge
+            color: isEnabled ? Theme.primary : Theme.surfaceText
             Layout.fillWidth: true
+            maximumLineCount: 1
         }
 
         DankButton {
@@ -57,7 +65,7 @@ DankButton {
             checked: modelData.enabled
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             onClicked: {
-                modelData.enabled = checked;
+                modelData.setEnabled(checked);
             }
         }
 
@@ -71,6 +79,7 @@ DankButton {
             backgroundColor: "transparent"
             onClicked: {
                 AlarmService.alarmList.splice(root.index, 1);
+                AlarmService.updateMetadata();
             }
         }
     }

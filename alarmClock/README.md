@@ -9,7 +9,6 @@ A DankMaterialShell widget for alarms, stopwatch and timer.
 ## Features
 
 - Alarms
-    - Currently there is no persistence of alarms between sessions
 - Stopwatch
 - Timers (coming soon)
 
