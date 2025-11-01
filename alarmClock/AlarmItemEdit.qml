@@ -28,37 +28,58 @@ DankFlickable {
 
     function getRepeat(id: int): bool {
         switch (id) {
-            case 0: return root.sunday
-            case 1: return root.monday
-            case 2: return root.tuesday
-            case 3: return root.wednesday
-            case 4: return root.thursday
-            case 5: return root.friday
-            case 6: return root.saturday
+        case 0:
+            return root.sunday;
+        case 1:
+            return root.monday;
+        case 2:
+            return root.tuesday;
+        case 3:
+            return root.wednesday;
+        case 4:
+            return root.thursday;
+        case 5:
+            return root.friday;
+        case 6:
+            return root.saturday;
         }
     }
 
     function setRepeat(id: string, value: bool) {
         switch (id) {
-            case "0": root.sunday = value; return;
-            case "1": root.monday = value; return;
-            case "2": root.tuesday = value; return;
-            case "3": root.wednesday = value; return;
-            case "4": root.thursday = value; return;
-            case "5": root.friday = value; return;
-            case "6": root.saturday = value; return;
+        case "0":
+            root.sunday = value;
+            return;
+        case "1":
+            root.monday = value;
+            return;
+        case "2":
+            root.tuesday = value;
+            return;
+        case "3":
+            root.wednesday = value;
+            return;
+        case "4":
+            root.thursday = value;
+            return;
+        case "5":
+            root.friday = value;
+            return;
+        case "6":
+            root.saturday = value;
+            return;
         }
     }
 
     function setAlarm(item: AlarmService.Alarm) {
-        root.alarmItem = item
-        root.sunday = item.repeats[0]
-        root.monday = item.repeats[1]
-        root.tuesday  = item.repeats[2]
-        root.wednesday= item.repeats[3]
-        root.thursday= item.repeats[4]
-        root.friday= item.repeats[5]
-        root.saturday= item.repeats[6]
+        root.alarmItem = item;
+        root.sunday = item.repeats[0];
+        root.monday = item.repeats[1];
+        root.tuesday = item.repeats[2];
+        root.wednesday = item.repeats[3];
+        root.thursday = item.repeats[4];
+        root.friday = item.repeats[5];
+        root.saturday = item.repeats[6];
 
         repeatsToggler.itemAt(0).checked = item.repeats[1];
         repeatsToggler.itemAt(1).checked = item.repeats[2];
@@ -236,7 +257,7 @@ DankFlickable {
                         color: checked ? Theme.primary : Theme.primarySelected
                         onClicked: {
                             checked = !checked;
-                            root.setRepeat(modelData.id, checked)
+                            root.setRepeat(modelData.id, checked);
                         }
                         Layout.preferredWidth: 32
                         Layout.preferredHeight: 32

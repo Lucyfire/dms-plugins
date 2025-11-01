@@ -13,10 +13,16 @@ PluginComponent {
     popoutWidth: 720
     popoutHeight: 450
 
+    onPluginDataChanged: {
+        AlarmService.alarmSound.source = Paths.toFileUrl(Paths.expandTilde(root.pluginData.soundFileLocation || Paths.strip(Qt.resolvedUrl("./alarm.wav"))));
+        AlarmService.snoozedMinutes = Number(root.pluginData.snoozeMinutes) || 5;
+        AlarmService.sendNotifications = root.pluginData.notifications == undefined ? true : root.pluginData.notifications;
+        AlarmService.notificationsUrgency = root.pluginData.notificationUrgency || "normal";
+    }
+
     popoutContent: Component {
         PopoutComponent {
             AlarmClockPopoutContent {
-                settingsData: root.pluginData
                 width: popoutWidth
                 height: popoutHeight - Theme.spacingS * 2
             }

@@ -40,6 +40,15 @@ DankButton {
 
         StyledText {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            visible: modelData.snoozedTime != null
+            text: "snoozed"
+            font.pixelSize: Theme.fontSizeXLarge
+            font.italic: true
+            color: isEnabled ? Theme.primary : Theme.surfaceText
+        }
+
+        StyledText {
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             text: modelData.name
             font.pixelSize: Theme.fontSizeXLarge
             color: isEnabled ? Theme.primary : Theme.surfaceText

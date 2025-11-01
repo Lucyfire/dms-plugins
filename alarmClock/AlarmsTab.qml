@@ -11,8 +11,6 @@ import qs.Widgets
 Item {
     id: root
 
-    required property var settingsData
-
     property bool showAlarmDetails: false
     property int selectedIndex: 0
 

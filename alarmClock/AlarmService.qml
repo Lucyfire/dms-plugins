@@ -12,6 +12,7 @@ Singleton {
 
     property int alarmTab: 0
     readonly property string metadataPath: Paths.cache + "/alarmClock.json"
+    readonly property string iconPath: Paths.expandTilde(Paths.strip(Qt.resolvedUrl("./clock.png")))
     property string widgetIcon: "alarm"
     property string widgetInfo: ""
     property alias alarmSound: alarmSound
@@ -20,6 +21,9 @@ Singleton {
 
     // Alarm Tab
     readonly property list<Alarm> alarmList: []
+    property int snoozedMinutes: 5
+    property bool sendNotifications: true
+    property string notificationsUrgency: "normal"
 
     // Stopwatch Tab
     enum StopwatchState {
@@ -42,6 +46,7 @@ Singleton {
             for (const alarmData of metadata?.alarms) {
                 const alarm = alarmComp.createObject(root);
                 alarm.fromMetadata(alarmData);
+                alarm.id = root.alarmList.length;
                 root.alarmList.push(alarm);
             }
         } catch (e) {}
@@ -61,9 +66,10 @@ Singleton {
     // Alarm Tab
     function addAlarm(): int {
         const alarm = alarmComp.createObject(root);
+        alarm.id = root.alarmList.length;
         root.alarmList.push(alarm);
         root.updateMetadata();
-        return root.alarmList.length - 1;
+        return alarm.id;
     }
 
     function stopAlarm() {
@@ -73,6 +79,7 @@ Singleton {
     component Alarm: QtObject {
         id: alarm
 
+        property int id: 0
         property int day: 0
         property int hour: 0
         property int minutes: 0
@@ -80,6 +87,7 @@ Singleton {
         property string name: ""
         property bool enabled: false
         property bool alarming: false
+        property var snoozedTime: null
 
         property var repeats: {
             // Sunday
@@ -145,6 +153,13 @@ Singleton {
 
         function shouldAlarm(): bool {
             const currentDate = new Date();
+            if (alarm.snoozedTime != null) {
+                if (currentDate.getTime() >= alarm.snoozedTime.getTime()) {
+                    alarm.snoozedTime = null;
+                    return true;
+                }
+                return false;
+            }
 
             const isRepeating = alarm.repeats[0] || alarm.repeats[1] || alarm.repeats[2] || alarm.repeats[3] || alarm.repeats[4] || alarm.repeats[5] || alarm.repeats[6];
             if (isRepeating && !alarm.repeats[currentDate.getDay()]) {
@@ -181,8 +196,15 @@ Singleton {
             }
         }
 
+        function snooze(ms: int) {
+            const currentDate = new Date();
+            currentDate.setTime(currentDate.getTime() + ms);
+            currentDate.setSeconds(0);
+            alarm.snoozedTime = currentDate;
+        }
+
         readonly property Timer timer: Timer {
-            running: alarm.enabled
+            running: alarm.enabled || alarm.snoozedTime !== null
             interval: 1000
             repeat: true
             onTriggered: {
@@ -191,11 +213,33 @@ Singleton {
                     if (!isRepeating) {
                         alarm.enabled = false;
                     } else {
-                        alarm.setDay(alarm.day+1)
+                        alarm.setDay(alarm.day + 1);
                     }
                     alarm.alarming = true;
                     alarmSound.play();
                     root.alarming(alarm);
+                    if (!root.sendNotifications) {
+                        return;
+                    }
+
+                    const name = alarm.name == "" ? "Untitled alarm" : alarm.name;
+                    Proc.runCommand(`alarmClock:${alarm.id}`, ["sh", "-c", `notify-send '${name}' -a 'Alarm Clock' -i ${root.iconPath} -u ${root.notificationsUrgency} -A stop='Stop' -A snooze="Snooze"`], (output, exitCode) => {
+                        output = output.trim();
+                        if (exitCode != 0) {
+                            return;
+                        }
+                        switch (output) {
+                        case "stop":
+                            alarm.alarming = false;
+                            root.stopAlarm();
+                            return;
+                        case "snooze":
+                            root.stopAlarm();
+                            alarm.alarming = false;
+                            alarm.snooze(root.snoozedMinutes * 60000);
+                            return;
+                        }
+                    });
                 }
             }
         }

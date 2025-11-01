@@ -34,7 +34,8 @@ cp -r "alarmClock" ~/.config/DankMaterialShell/plugins/
 
 ## Requirements
 
-- qt6-multimedia (for sound)
+- `qt6-multimedia` (for sound)
+- `notify-send` (for notifications)
 - DankMaterialShell >= 0.2.4
 - Wayland compositor (Niri, Hyprland, etc.)
 

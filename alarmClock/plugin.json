@@ -3,7 +3,7 @@
     "id": "alarmClock",
     "name": "Alarm Clock",
     "description": "An alarm clock widget in its early stages",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "author": "lucyfire",
     "icon": "alarm",
     "type": "widget",

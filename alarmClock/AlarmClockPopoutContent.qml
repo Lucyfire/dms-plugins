@@ -8,13 +8,7 @@ import qs.Widgets
 Column {
     id: root
 
-    required property var settingsData
-
     spacing: Theme.spacingL
-
-    Component.onCompleted: {
-        AlarmService.alarmSound.source = Paths.toFileUrl(Paths.expandTilde(settingsData.soundFileLocation || Paths.strip(Qt.resolvedUrl("./alarm.wav"))));
-    }
 
     DankTabBar {
         id: alarmTabBar
@@ -43,7 +37,6 @@ Column {
     AlarmsTab {
         visible: alarmTabBar.currentIndex == 0
 
-        settingsData: root.settingsData
         width: parent.width
         height: parent.height - alarmTabBar.height - Theme.spacingS
 

@@ -29,6 +29,42 @@ PluginSettings {
         }
     }
 
+    ToggleSetting {
+        id: notificationsToggle
+        settingKey: "notifications"
+        label: "Send notifications"
+        defaultValue: true
+    }
+
+    SelectionSetting {
+        visible: notificationsToggle.value
+        settingKey: "notificationUrgency"
+        label: "Urgency of notifications"
+        options: [
+            {
+                label: "Low",
+                value: "low"
+            },
+            {
+                label: "Normal",
+                value: "normal"
+            },
+            {
+                label: "Critical",
+                value: "critical"
+            }
+        ]
+        defaultValue: "normal"
+    }
+
+    StringSetting {
+        visible: notificationsToggle.value
+        settingKey: "snoozeMinutes"
+        label: "Snooze duration"
+        description: "Number in minutes"
+        defaultValue: "5"
+    }
+
     SoundEffect {
         id: testSound
         source: Paths.toFileUrl(Paths.expandTilde(audioLocation.value))
