@@ -30,7 +30,10 @@ cp -r "alarmClock" ~/.config/DankMaterialShell/plugins/
 
 ## Configuration
 
-- set the path to the alarm audio file in the plugins settings, it must be in .wav format
+- Set the path to the alarm audio file in the plugins settings, it must be in .wav format
+- Enable notifications for alarms (default: true)
+- Choose snooze time duration (default: 5 minutes)
+- Choose urgency of notifications (default: critical)
 
 ## Requirements
 
