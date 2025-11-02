@@ -188,9 +188,9 @@ Singleton {
 
         function fromMetadata(data: var) {
             alarm.name = data?.name || "";
-            alarm.hour = data?.hour || 0;
-            alarm.minutes = data?.minutes || 0;
-            alarm.enabled = data?.enabled || false;
+            alarm.setHour(data?.hour || 0);
+            alarm.setMinutes(data?.minutes || 0);
+            alarm.setEnabled(data?.enabled || false);
             if (data?.repeats) {
                 alarm.repeats = data.repeats;
             }
