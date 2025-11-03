@@ -21,11 +21,20 @@ Item {
         Downloading
     }
 
+    required property var pluginService
     property bool isLoading: false
     property var wallpapers: {}
     property string wallpaperSource: "unsplash"
-    property list<string> wallpaperSources: ["unsplash",]
+    property list<string> wallpaperSources: ["unsplash", "pexels"]
     property string wallpaperQuery: ""
+
+    onWallpaperSourceChanged: {
+        pluginService.savePluginData("wallpaperDiscovery", "lastWallpaperUsed", root.wallpaperSource);
+    }
+
+    Component.onCompleted: {
+        root.wallpaperSource = pluginService.loadPluginData("wallpaperDiscovery", "lastWallpaperUsed", root.wallpaperSource);
+    }
 
     function fetchWallpapers() {
         const source = root.wallpaperSource;
@@ -44,6 +53,21 @@ Item {
                     root.wallpapers = JSON.parse(raw);
                 } catch (e) {}
             });
+            break;
+        case "pexels":
+            Proc.runCommand("wallpaperDiscoveryFetch", ["curl", "https://api.pexels.com/v1/search?page=1&per_page=100&query=" + encodeURI(query), "-H", `authorization: ${settingsData?.api_pexels}`], (output, exitCode) => {
+                root.isLoading = false;
+                if (exitCode !== 0) {
+                    ToastService?.showError("Query failed");
+                    console.error("Wallpaper Discovery", output);
+                    return;
+                }
+                const raw = output.trim();
+                try {
+                    root.wallpapers = JSON.parse(raw);
+                } catch (e) {}
+            });
+            break;
         }
         return {};
     }
@@ -56,9 +80,9 @@ Item {
             return false;
         }
         const saveDir = Paths.expandTilde(`${dir}/${source}`);
+        Paths.mkdir(saveDir);
         switch (source) {
         case "unsplash":
-            Paths.mkdir(saveDir);
             Proc.runCommand("wallpaperDiscoveryDownload", ["sh", "-c", `curl '${url}' --output ${saveDir}/${filename}.jpeg`], (output, exitCode) => {
                 if (exitCode !== 0) {
                     ToastService?.showError("Download Failed");
@@ -66,6 +90,16 @@ Item {
                 }
                 ToastService?.showInfo("Wallpaper saved");
             });
+            break;
+        case "pexels":
+            Proc.runCommand("wallpaperDiscoveryDownload", ["sh", "-c", `curl '${url}' --output ${saveDir}/${filename}.jpeg`], (output, exitCode) => {
+                if (exitCode !== 0) {
+                    ToastService?.showError("Download Failed");
+                    return false;
+                }
+                ToastService?.showInfo("Wallpaper saved");
+            });
+            break;
         }
         return true;
     }
@@ -184,6 +218,11 @@ Item {
                             return [];
                         }
                         return root.wallpapers.results;
+                    case "pexels":
+                        if (root.wallpapers?.photos == undefined) {
+                            return [];
+                        }
+                        return root.wallpapers.photos;
                     }
                     return [];
                 }
@@ -197,6 +236,8 @@ Item {
                         switch (root.wallpaperSource) {
                         case "unsplash":
                             return modelData.urls.regular;
+                        case "pexels":
+                            return modelData.src.medium;
                         }
                         return "";
                     }
@@ -294,10 +335,12 @@ Item {
                             }
 
                             onClicked: {
+                                itemState = WallpaperDiscoveryPopoutContent.WallpaperState.Downloading;
                                 switch (root.wallpaperSource) {
                                 case "unsplash":
-                                    itemState = WallpaperDiscoveryPopoutContent.WallpaperState.Downloading;
                                     itemState = download(modelData.id, modelData.urls.full) ? WallpaperDiscoveryPopoutContent.WallpaperState.Downloaded : WallpaperDiscoveryPopoutContent.WallpaperState.None;
+                                case "pexels":
+                                    itemState = download(modelData.id, modelData.src.original) ? WallpaperDiscoveryPopoutContent.WallpaperState.Downloaded : WallpaperDiscoveryPopoutContent.WallpaperState.None;
                                 }
                             }
                         }

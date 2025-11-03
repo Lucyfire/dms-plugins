@@ -36,4 +36,11 @@ PluginSettings {
         description: "Get an api key from: https://unsplash.com/developers"
         defaultValue: ""
     }
+
+    StringSetting {
+        settingKey: "api_pexels"
+        label: "pexels api key"
+        description: "Get an api key from: https://www.pexels.com/api/key/"
+        defaultValue: ""
+    }
 }

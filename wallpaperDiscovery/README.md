@@ -13,6 +13,8 @@ Search and download wallpapers from:
 
 - [**unsplash**](https://unsplash.com/)
 You will need an API Key. Register at [unsplash.com/developers](https://unsplash.com/developers), create an [application](https://unsplash.com/oauth/applications) and generate an API key.
+- [**pexels**](https://pexels.com/)
+You will need an API Key. Register at [pexels.com/api/key](https://pexels.com/api/key) and generate an API key.
 
 ## Installation
 
@@ -33,7 +35,7 @@ cp -r "wallpaperDiscovery" ~/.config/DankMaterialShell/plugins/
 # 3. Click "Scan for Plugins"
 # 4. Toggle "Wallpaper Discover" to enable
 # 5. Select Download location
-# 6. Add you API key
+# 6. Add you API keys
 # 7. Go to Dank Bar and add the widget
 ```
 

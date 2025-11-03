@@ -17,6 +17,7 @@ PluginComponent {
     popoutContent: Component {
         PopoutComponent {
             WallpaperDiscoveryPopoutContent {
+                pluginService: root.pluginService
                 settingsData: root.pluginData
                 implicitWidth: popoutWidth
                 implicitHeight: popoutHeight - Theme.spacingS * 2
