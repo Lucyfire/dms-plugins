@@ -31,7 +31,15 @@ None at the moment.
 
 - DankMaterialShell >= 0.2.4
 - Hyprland
-    - a monitorv2 definiton in your hyprland.conf file
+    - a monitorv2 definiton in your hyprland.conf file.
+    - For the monitor to be able to be turned off it needs to have an initial 
+    disabled value eg:
+    ```
+    monitorv2 {
+        output = DP-1
+        disabled = 0
+    }
+    ```
 
 ## Compatibility
 
