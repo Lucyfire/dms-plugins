@@ -29,11 +29,12 @@ PluginComponent {
             if (modal.shouldBeVisible) {
                 modal.shouldBeVisible = false;
                 modal.close();
-            } else {
-                modal.shouldBeVisible = true;
-                modal.openCentered();
+                return "DISPLAY_SETTINGS_CLOSE_SUCCESS";
             }
-            return modal.shouldBeVisible ? "DISPLAY_SETTINGS_OPEN_SUCCESS" : "DISPLAY_SETTINGS_CLOSE_SUCCESS";
+
+            modal.shouldBeVisible = true;
+            modal.openCentered();
+            return "DISPLAY_SETTINGS_OPEN_SUCCESS";
         }
 
         target: "displaySettings"
