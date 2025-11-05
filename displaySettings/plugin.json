@@ -1,0 +1,17 @@
+{
+    "$schema": "https://github.com/AvengeMedia/DankMaterialShell/raw/refs/heads/master/PLUGINS/plugin-schema.json",
+    "id": "displaySettings",
+    "name": "Display Settings",
+    "description": "Display settings for hyprland",
+    "version": "0.1.0",
+    "author": "lucyfire",
+    "icon": "computer",
+    "type": "daemon",
+    "capabilities": [
+        "manage-displays"
+    ],
+    "component": "./DisplaySettingsWidget.qml",
+    "requires_dms": ">=0.2.4",
+    "requires": [],
+    "permissions": []
+}
