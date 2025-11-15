@@ -15,6 +15,9 @@ Search and download wallpapers from:
 You will need an API Key. Register at [unsplash.com/developers](https://unsplash.com/developers), create an [application](https://unsplash.com/oauth/applications) and generate an API key.
 - [**pexels**](https://pexels.com/)
 You will need an API Key. Register at [pexels.com/api/key](https://pexels.com/api/key) and generate an API key.
+- [**wallhaven.cc**](https://wallhaven.cc/)
+Wallhaven works without an api key, returning only SFW wallpapers. 
+If you want an api key, you can get one by registering at [wallhaven.cc/settings/account](https://wallhaven.cc/settings/account).
 
 ## Installation
 

@@ -24,8 +24,8 @@ Item {
     required property var pluginService
     property bool isLoading: false
     property var wallpapers: {}
-    property string wallpaperSource: "unsplash"
-    property list<string> wallpaperSources: ["unsplash", "pexels"]
+    property string wallpaperSource: "wallhaven.cc"
+    property list<string> wallpaperSources: ["unsplash", "pexels", "wallhaven.cc"]
     property string wallpaperQuery: ""
 
     onWallpaperSourceChanged: {
@@ -39,37 +39,41 @@ Item {
     function fetchWallpapers() {
         const source = root.wallpaperSource;
         const query = root.wallpaperQuery;
+        const cmd = ["curl"]
         switch (source) {
         case "unsplash":
-            Proc.runCommand("wallpaperDiscoveryFetch", ["curl", "https://api.unsplash.com/search/photos?per_page=50&query=" + encodeURI(query), "-H", `authorization: Client-ID ${settingsData?.api_unsplash}`], (output, exitCode) => {
-                root.isLoading = false;
-                if (exitCode !== 0) {
-                    ToastService?.showError("Query failed");
-                    console.error("Wallpaper Discovery", output);
-                    return;
-                }
-                const raw = output.trim();
-                try {
-                    root.wallpapers = JSON.parse(raw);
-                } catch (e) {}
-            });
+            cmd.push(
+                "https://api.unsplash.com/search/photos?per_page=50&query=" + encodeURI(query),
+                "-H", `authorization: Client-ID ${settingsData?.api_unsplash}`
+            )
             break;
         case "pexels":
-            Proc.runCommand("wallpaperDiscoveryFetch", ["curl", "https://api.pexels.com/v1/search?page=1&per_page=100&query=" + encodeURI(query), "-H", `authorization: ${settingsData?.api_pexels}`], (output, exitCode) => {
-                root.isLoading = false;
-                if (exitCode !== 0) {
-                    ToastService?.showError("Query failed");
-                    console.error("Wallpaper Discovery", output);
-                    return;
-                }
-                const raw = output.trim();
-                try {
-                    root.wallpapers = JSON.parse(raw);
-                } catch (e) {}
-            });
+            cmd.push(
+                "https://api.pexels.com/v1/search?page=1&per_page=100&query=" + encodeURI(query),
+                "-H", `authorization: ${settingsData?.api_pexels}`
+            )
+            break;
+        case "wallhaven.cc":
+            cmd.push("https://wallhaven.cc/api/v1/search?page=1&sorting=relevance&q=" + encodeURI(query))
+            if (settingsData?.api_wallhavencc !== undefined && settingsData.api_wallhavencc !== "") {
+                cmd.push("-H")
+                cmd.push(`X-API-Key:${settingsData.api_wallhavencc}`)
+            }
             break;
         }
-        return {};
+        Proc.runCommand("wallpaperDiscoveryFetch", cmd, (output, exitCode) => {
+            root.isLoading = false;
+            if (exitCode !== 0) {
+                ToastService?.showError("Query failed");
+                console.error("Wallpaper Discovery", output);
+                return;
+            }
+            const raw = output.trim();
+            try {
+                root.wallpapers = JSON.parse(raw);
+            } catch (e) {}
+        });
+        return
     }
 
     function download(filename: string, url: string): bool {
@@ -81,26 +85,14 @@ Item {
         }
         const saveDir = Paths.expandTilde(`${dir}/${source}`);
         Paths.mkdir(saveDir);
-        switch (source) {
-        case "unsplash":
-            Proc.runCommand("wallpaperDiscoveryDownload", ["sh", "-c", `curl '${url}' --output ${saveDir}/${filename}.jpeg`], (output, exitCode) => {
-                if (exitCode !== 0) {
-                    ToastService?.showError("Download Failed");
-                    return false;
-                }
-                ToastService?.showInfo("Wallpaper saved");
-            });
-            break;
-        case "pexels":
-            Proc.runCommand("wallpaperDiscoveryDownload", ["sh", "-c", `curl '${url}' --output ${saveDir}/${filename}.jpeg`], (output, exitCode) => {
-                if (exitCode !== 0) {
-                    ToastService?.showError("Download Failed");
-                    return false;
-                }
-                ToastService?.showInfo("Wallpaper saved");
-            });
-            break;
-        }
+
+        Proc.runCommand("wallpaperDiscoveryDownload", ["sh", "-c", `curl '${url}' --output ${saveDir}/${filename}.jpeg`], (output, exitCode) => {
+            if (exitCode !== 0) {
+                ToastService?.showError("Download Failed");
+                return false;
+            }
+            ToastService?.showInfo("Wallpaper saved");
+        });
         return true;
     }
 
@@ -223,6 +215,11 @@ Item {
                             return [];
                         }
                         return root.wallpapers.photos;
+                    case "wallhaven.cc":
+                        if (root.wallpapers?.data == undefined) {
+                            return [];
+                        }
+                        return root.wallpapers.data;
                     }
                     return [];
                 }
@@ -238,6 +235,8 @@ Item {
                             return modelData.urls.regular;
                         case "pexels":
                             return modelData.src.medium;
+                        case "wallhaven.cc":
+                            return modelData.thumbs.large;
                         }
                         return "";
                     }
@@ -339,8 +338,13 @@ Item {
                                 switch (root.wallpaperSource) {
                                 case "unsplash":
                                     itemState = download(modelData.id, modelData.urls.full) ? WallpaperDiscoveryPopoutContent.WallpaperState.Downloaded : WallpaperDiscoveryPopoutContent.WallpaperState.None;
+                                    break;
                                 case "pexels":
                                     itemState = download(modelData.id, modelData.src.original) ? WallpaperDiscoveryPopoutContent.WallpaperState.Downloaded : WallpaperDiscoveryPopoutContent.WallpaperState.None;
+                                    break;
+                                case "wallhaven.cc":
+                                    itemState = download(modelData.id, modelData.path) ? WallpaperDiscoveryPopoutContent.WallpaperState.Downloaded : WallpaperDiscoveryPopoutContent.WallpaperState.None;
+                                    break;
                                 }
                             }
                         }

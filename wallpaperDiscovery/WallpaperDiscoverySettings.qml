@@ -40,7 +40,14 @@ PluginSettings {
     StringSetting {
         settingKey: "api_pexels"
         label: "pexels api key"
-        description: "Get an api key from: https://www.pexels.com/api/key/"
+        description: "Get an api key from: https://www.pexels.com/api/key"
+        defaultValue: ""
+    }
+
+    StringSetting {
+        settingKey: "api_wallhavencc"
+        label: "wallhaven.cc api key"
+        description: "Wallhaven can be used without an api key for just SFW wallpapers.\nYou can get an api key from: https://wallhaven.cc/settings/account"
         defaultValue: ""
     }
 }
