@@ -147,11 +147,15 @@ Item {
                 Keys.onReturnPressed: {
                     root.isLoading = true;
                     root.fetchWallpapers();
+                    root.page = 1;
+                    wallpaperModel.clear();
                 }
 
                 Keys.onEnterPressed: {
                     root.isLoading = true;
                     root.fetchWallpapers();
+                    root.page = 1;
+                    wallpaperModel.clear();
                 }
                 onTextEdited: {
                     root.wallpaperQuery = text.trim();
@@ -167,6 +171,8 @@ Item {
                 onClicked: {
                     root.isLoading = true;
                     root.fetchWallpapers();
+                    root.page = 1;
+                    wallpaperModel.clear();
                 }
             }
         }
@@ -241,7 +247,6 @@ Item {
                         required property int index
 
                         property string wallpaperPath: {
-                            // console.info("items", wallpaperModel)
                             switch (root.wallpaperSource) {
                             case "unsplash":
                                 return modelData.urls.regular;
