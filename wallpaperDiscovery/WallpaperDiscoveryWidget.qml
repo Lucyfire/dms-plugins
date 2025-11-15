@@ -11,16 +11,23 @@ PluginComponent {
     property var popoutService: null
     property string selectedPopout: pluginData.selectedPopout || "controlCenter"
 
-    popoutWidth: 720
-    popoutHeight: 450
+    pillClickAction: () => {
+        wallpaperSlideout.toggle();
+    }
 
-    popoutContent: Component {
-        PopoutComponent {
-            WallpaperDiscoveryPopoutContent {
+    DankSlideout {
+        id: wallpaperSlideout
+        modelData: root.parentScreen || Screen
+        title: I18n.tr("Wallpaper Discovery")
+        slideoutWidth: 720
+        expandable: false
+        expandedWidthValue: 1200
+
+        content: Component {
+            WallpaperDiscoveryContent {
                 pluginService: root.pluginService
                 settingsData: root.pluginData
-                implicitWidth: popoutWidth
-                implicitHeight: popoutHeight - Theme.spacingS * 2
+                implicitHeight: wallpaperSlideout.container.height > 0 ? wallpaperSlideout.container.height : 440
             }
         }
     }
