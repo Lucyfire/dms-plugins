@@ -15,6 +15,13 @@ Registers 3 new ipc calls to dms
 
 ## Installation
 
+### From Plugin Registry (Recommended)
+```bash
+dms plugins install displaySettings
+# or install using the plugins tab on DMS settings
+```
+
+### Manual Installation
 ```bash
 # Copy plugin to DMS plugins directory
 cp -r "displaySettings" ~/.config/DankMaterialShell/plugins/
@@ -29,17 +36,9 @@ None at the moment.
 
 ## Requirements
 
-- DankMaterialShell >= 0.2.4
+- DankMaterialShell >= 0.6.2
 - Hyprland
-    - a monitorv2 definiton in your hyprland.conf file.
-    - For the monitor to be able to be turned off it needs to have an initial 
-    disabled value eg:
-    ```
-    monitorv2 {
-        output = DP-1
-        disabled = 0
-    }
-    ```
+    - a monitorv2 definition in your hyprland.conf file.
 
 ## Compatibility
 

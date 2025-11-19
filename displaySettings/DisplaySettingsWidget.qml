@@ -27,14 +27,9 @@ PluginComponent {
 
         function toggle(): string {
             if (modal.shouldBeVisible) {
-                modal.shouldBeVisible = false;
-                modal.close();
-                return "DISPLAY_SETTINGS_CLOSE_SUCCESS";
+                return close();
             }
-
-            modal.shouldBeVisible = true;
-            modal.openCentered();
-            return "DISPLAY_SETTINGS_OPEN_SUCCESS";
+            return open();
         }
 
         target: "displaySettings"
