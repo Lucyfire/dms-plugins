@@ -15,6 +15,7 @@ Item {
     id: root
 
     required property var settingsData
+    required property var pluginService
 
     enum WallpaperState {
         None,
@@ -22,25 +23,29 @@ Item {
         Downloading
     }
 
-    required property var pluginService
-
     property int itemHeight: 220
 
     property bool isLoading: false
     property int page: 1
-    property var wallpapers: {}
-    property string wallpaperSource: "wallhaven.cc"
+    property int lastPage: -1
+    property string wallpaperSource: settingsData.lastWallpaperUsed || "wallhaven.cc"
     property list<string> wallpaperSources: ["unsplash", "pexels", "wallhaven.cc"]
     property string wallpaperQuery: ""
+    property bool enableAnimation: false
 
-    onWallpaperSourceChanged: {
-        pluginService.savePluginData("wallpaperDiscovery", "lastWallpaperUsed", root.wallpaperSource);
+    function setSource(s: string) {
         page = 1;
+        lastPage = -1;
         wallpaperModel.clear();
+        root.wallpaperSource = s;
+        pluginService.savePluginData("wallpaperDiscovery", "lastWallpaperUsed", root.wallpaperSource);
     }
 
-    Component.onCompleted: {
-        root.wallpaperSource = pluginService.loadPluginData("wallpaperDiscovery", "lastWallpaperUsed", root.wallpaperSource);
+    function search() {
+        root.isLoading = true;
+        root.page = 1;
+        wallpaperModel.clear();
+        root.fetchWallpapers();
     }
 
     function fetchWallpapers() {
@@ -62,7 +67,7 @@ Item {
             }
             break;
         }
-        Proc.runCommand("wallpaperDiscoveryFetch", cmd, (output, exitCode) => {
+        Proc.runCommand(`wallpaperDiscoveryFetch:${root.wallpaperSource}`, cmd, (output, exitCode) => {
             root.isLoading = false;
             if (exitCode !== 0) {
                 ToastService?.showError("Query failed");
@@ -71,21 +76,27 @@ Item {
             }
             const raw = output.trim();
             try {
-                root.wallpapers = JSON.parse(raw);
-                let tmp;
-                switch (root.wallpaperSource) {
+                const parsedResponse = JSON.parse(raw);
+                let tmp, item;
+                switch (source) {
                 case "unsplash":
-                    tmp = root.wallpapers.results || [];
+                    tmp = parsedResponse.results || [];
+                    root.lastPage = (parsedResponse?.total_pages || -1) / 10;
                     break;
                 case "pexels":
-                    tmp = root.wallpapers.photos || [];
+                    tmp = parsedResponse.photos || [];
+                    root.lastPage = (parsedResponse?.total_results || -1) / 30;
                     break;
                 case "wallhaven.cc":
-                    tmp = root.wallpapers.data || [];
+                    tmp = parsedResponse.data || [];
+                    root.lastPage = parsedResponse?.meta?.last_page || -1;
                     break;
                 }
                 for (let i = 0; i < tmp.length; i++) {
-                    wallpaperModel.append(tmp[i]);
+                    item = wallaperItemComp.createObject(wallpaperModel);
+                    item.source = source;
+                    item.create(tmp[i]);
+                    wallpaperModel.append(item);
                 }
             } catch (e) {}
         });
@@ -112,16 +123,12 @@ Item {
         return true;
     }
 
-    property int gridIndex: 0
-    property bool enableAnimation: false
-
     Column {
         anchors.fill: parent
         spacing: Theme.spacingS
 
         Row {
             id: options
-            property string value: "unsplash"
 
             spacing: Theme.spacingS
             width: parent.width - Theme.spacingS * 4
@@ -135,7 +142,7 @@ Item {
                 currentValue: root.wallpaperSource
                 options: root.wallpaperSources
                 onValueChanged: newValue => {
-                    root.wallpaperSource = newValue;
+                    root.setSource(newValue);
                 }
             }
 
@@ -145,17 +152,11 @@ Item {
                 height: parent.height
                 placeholderText: "Search for photos"
                 Keys.onReturnPressed: {
-                    root.isLoading = true;
-                    root.fetchWallpapers();
-                    root.page = 1;
-                    wallpaperModel.clear();
+                    root.search();
                 }
 
                 Keys.onEnterPressed: {
-                    root.isLoading = true;
-                    root.fetchWallpapers();
-                    root.page = 1;
-                    wallpaperModel.clear();
+                    root.search();
                 }
                 onTextEdited: {
                     root.wallpaperQuery = text.trim();
@@ -169,10 +170,7 @@ Item {
                 iconName: "search"
                 iconSize: Theme.iconSizeLarge
                 onClicked: {
-                    root.isLoading = true;
-                    root.fetchWallpapers();
-                    root.page = 1;
-                    wallpaperModel.clear();
+                    root.search();
                 }
             }
         }
@@ -246,17 +244,6 @@ Item {
                         required property var modelData
                         required property int index
 
-                        property string wallpaperPath: {
-                            switch (root.wallpaperSource) {
-                            case "unsplash":
-                                return modelData.urls.regular;
-                            case "pexels":
-                                return modelData.src.medium;
-                            case "wallhaven.cc":
-                                return modelData.thumbs.large;
-                            }
-                            return "";
-                        }
                         property int itemState: WallpaperDiscoveryContent.WallpaperState.None
                         property bool isSelected: wallpaperGrid.currentIndex === index
 
@@ -285,7 +272,9 @@ Item {
                             Image {
                                 id: thumbnailImage
                                 anchors.fill: parent
-                                source: wallpaperPath
+                                source: {
+                                    return modelData.thumbnail;
+                                }
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true
                                 cache: true
@@ -352,17 +341,7 @@ Item {
 
                                 onClicked: {
                                     itemState = WallpaperDiscoveryContent.WallpaperState.Downloading;
-                                    switch (root.wallpaperSource) {
-                                    case "unsplash":
-                                        itemState = download(modelData.id, modelData.urls.full) ? WallpaperDiscoveryContent.WallpaperState.Downloaded : WallpaperDiscoveryContent.WallpaperState.None;
-                                        break;
-                                    case "pexels":
-                                        itemState = download(modelData.id, modelData.src.original) ? WallpaperDiscoveryContent.WallpaperState.Downloaded : WallpaperDiscoveryContent.WallpaperState.None;
-                                        break;
-                                    case "wallhaven.cc":
-                                        itemState = download(modelData.id, modelData.path) ? WallpaperDiscoveryContent.WallpaperState.Downloaded : WallpaperDiscoveryContent.WallpaperState.None;
-                                        break;
-                                    }
+                                    itemState = download(modelData.id, modelData.downloadUrl) ? WallpaperDiscoveryContent.WallpaperState.Downloaded : WallpaperDiscoveryContent.WallpaperState.None;
                                 }
                             }
                         }
@@ -376,18 +355,7 @@ Item {
                         if (root.isLoading) {
                             return false;
                         }
-                        let lastPage;
-                        switch (root.wallpaperSource) {
-                        case "unsplash":
-                            lastPage = (root.wallpapers?.total_pages || -1) % 10;
-                            return lastPage > root.page;
-                        case "pexels":
-                            lastPage = (root.wallpapers?.total_results || -1) % 30;
-                            return lastPage > root.page;
-                        case "wallhaven.cc":
-                            lastPage = root.wallpapers?.meta?.last_page || -1;
-                            return lastPage > root.page;
-                        }
+                        return root.lastPage > root.page;
                     }
                     Layout.alignment: Qt.AlignCenter
                     Layout.bottomMargin: 50
@@ -427,5 +395,35 @@ Item {
                 running: parent.running
             }
         }
+    }
+
+    component WallpaperItem: QtObject {
+        property string id: ""
+        property string thumbnail: ""
+        property string downloadUrl: ""
+        property string source: ""
+
+        function create(v: var) {
+            id = "" + v.id || "";
+            switch (source) {
+            case "unsplash":
+                thumbnail = v?.urls?.regular || "";
+                downloadUrl = v?.urls?.full || "";
+                break;
+            case "pexels":
+                thumbnail = v?.src?.medium || "";
+                downloadUrl = v?.src?.original || "";
+                break;
+            case "wallhaven.cc":
+                thumbnail = v?.thumbs?.large || "";
+                downloadUrl = v?.path || "";
+                break;
+            }
+        }
+    }
+
+    Component {
+        id: wallaperItemComp
+        WallpaperItem {}
     }
 }
