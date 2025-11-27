@@ -4,8 +4,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
 import QtQuick.Layouts
-import Quickshell
-import Quickshell.Io
 import qs.Common
 import qs.Modals.FileBrowser
 import qs.Services
@@ -211,7 +209,7 @@ Item {
                     cellWidth: width / 2
                     cellHeight: {
                         const availH = renderArea.height - loadMore.implicitHeight;
-                        return availH / (availH % root.itemHeight);
+                        return availH / Math.floor(availH / root.itemHeight);
                     }
                     clip: true
                     enabled: !root.isLoading
