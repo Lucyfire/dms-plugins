@@ -36,7 +36,7 @@ PluginComponent {
             DankIcon {
                 name: AlarmService.widgetIcon
                 color: Theme.primary
-                size: Theme.iconSize
+                size: root.iconSize
                 anchors.verticalCenter: parent.verticalCenter
             }
 
@@ -57,7 +57,7 @@ PluginComponent {
             DankIcon {
                 name: AlarmService.widgetIcon
                 color: Theme.primary
-                size: Theme.iconSize
+                size: root.iconSize
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
