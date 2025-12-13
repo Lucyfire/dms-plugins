@@ -3,7 +3,7 @@
     "id": "displaySettings",
     "name": "Display Settings",
     "description": "Display settings for hyprland",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "lucyfire",
     "icon": "computer",
     "type": "daemon",

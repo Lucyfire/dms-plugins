@@ -1,5 +1,7 @@
-import Quickshell
 import QtQuick
+import QtQuick.Effects
+import Quickshell
+import Quickshell.Hyprland
 import qs.Common
 import qs.Modals.Common
 import qs.Services
@@ -8,14 +10,20 @@ import qs.Widgets
 DankModal {
     id: root
 
+    layerNamespace: "dms:plugins:displaySettings"
+    keepPopoutsOpen: true
+
+    HyprlandFocusGrab {
+        windows: [root.contentWindow]
+        active: root.useHyprlandFocusGrab && root.shouldHaveFocus
+    }
+
     property int selectedIndex: 0
     property int optionCount: DisplaySettingsService.displays.length
     property rect parentBounds: Qt.rect(0, 0, 0, 0)
-    property var parentScreen: null
 
     function openCentered() {
         parentBounds = Qt.rect(0, 0, 0, 0);
-        parentScreen = null;
         backgroundOpacity = 0.5;
         open();
     }
@@ -24,7 +32,6 @@ DankModal {
     width: 320
     height: contentLoader.item ? contentLoader.item.implicitHeight : 300
     enableShadow: true
-    screen: parentScreen
     positioning: parentBounds.width > 0 ? "custom" : "center"
     customPosition: {
         if (parentBounds.width > 0) {
