@@ -39,7 +39,7 @@ PluginComponent {
             DankIcon {
                 name: "wallpaper_slideshow"
                 color: Theme.primary
-                size: Theme.iconSize
+                size: root.iconSize
                 anchors.verticalCenter: parent.verticalCenter
             }
         }
@@ -52,7 +52,7 @@ PluginComponent {
             DankIcon {
                 name: "wallpaper_slideshow"
                 color: Theme.primary
-                size: Theme.iconSize
+                size: root.iconSize
                 anchors.horizontalCenter: parent.horizontalCenter
             }
         }
