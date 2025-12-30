@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import qs.Services
 
-Item {
+QtObject {
     id: root
 
     property var pluginService: null
@@ -606,9 +606,9 @@ Item {
     ]
 
     Component.onCompleted: {
-        if (pluginService) {
-            trigger = pluginService.loadPluginData("gitmojiLauncher", "trigger", root.trigger);
-        }
+        if (!pluginService)
+            return;
+        trigger = pluginService.loadPluginData("gitmojiLauncher", "trigger", root.trigger);
     }
 
     function getItems(query) {
@@ -617,7 +617,7 @@ Item {
 
         for (let i = 0; i < gitmojiDatabase.length; i++) {
             const gitmoji = gitmojiDatabase[i];
-            if (!query || gitmoji.name.toLowerCase().includes(lowerQuery) || gitmoji.emoji.includes(query) || gitmoji.description.includes(lowerQuery)) {
+            if (!query || gitmoji.name.toLowerCase().includes(lowerQuery) || gitmoji.emoji.includes(query) || gitmoji.description.toLowerCase().includes(lowerQuery)) {
                 items.push({
                     name: gitmoji.name,
                     comment: gitmoji.description,
@@ -632,25 +632,24 @@ Item {
     }
 
     function executeItem(item) {
-        if (!item || !item.action) {
-            console.warn("GitmojiLauncher: Invalid item or action");
+        if (!item?.action)
             return;
-        }
-
         const actionParts = item.action.split(":");
         const actionType = actionParts[0];
         const actionData = actionParts.slice(1).join(":");
 
-        if (actionType === "copy") {
+        switch (actionType) {
+        case "copy":
             Quickshell.execDetached(["sh", "-c", "echo -n '" + actionData + "' | wl-copy"]);
             ToastService?.showInfo("Copied " + actionData + " to clipboard");
+            break;
         }
     }
 
     onTriggerChanged: {
-        if (pluginService) {
-            pluginService.savePluginData("gitmojiLauncher", "trigger", trigger);
-        }
+        if (!pluginService)
+            return;
+        pluginService.savePluginData("gitmojiLauncher", "trigger", trigger);
         itemsChanged();
     }
 }
