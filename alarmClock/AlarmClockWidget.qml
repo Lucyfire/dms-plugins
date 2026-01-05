@@ -42,7 +42,7 @@ PluginComponent {
 
             StyledText {
                 anchors.verticalCenter: parent.verticalCenter
-                text: AlarmService.widgetInfo
+                text: AlarmService.widgetInfoH
                 visible: text != ""
                 font.pixelSize: Theme.fontSizeXLarge
                 color: Theme.primary
@@ -63,7 +63,7 @@ PluginComponent {
 
             StyledText {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: AlarmService.widgetInfo
+                text: AlarmService.widgetInfoV
                 visible: text != ""
                 font.pixelSize: Theme.fontSizeXLarge
                 color: Theme.primary

@@ -14,7 +14,8 @@ Singleton {
     readonly property string metadataPath: Paths.cache + "/alarmClock.json"
     readonly property string iconPath: Paths.expandTilde(Paths.strip(Qt.resolvedUrl("./clock.png")))
     property string widgetIcon: "alarm"
-    property string widgetInfo: ""
+    property string widgetInfoH: ""
+    property string widgetInfoV: ""
     property alias alarmSound: alarmSound
 
     signal alarming(Alarm alarm)
@@ -55,11 +56,13 @@ Singleton {
 
     function updateWidget() {
         if (root.stopwatchState == AlarmService.StopwatchState.Running) {
-            root.widgetInfo = stopwatchTime(true);
+            root.widgetInfoH = stopwatchTime(true);
+            root.widgetInfoV = stopwatchTime(true, true);
             root.widgetIcon = "timer_play";
             return;
         }
-        root.widgetInfo = "";
+        root.widgetInfoH = "";
+        root.widgetInfoV = "";
         root.widgetIcon = "alarm";
     }
 
@@ -280,19 +283,20 @@ Singleton {
         root.stopwatchTimer.stop();
     }
 
-    function stopwatchTime(small: bool): string {
+    function stopwatchTime(small: bool, vertical: bool): string {
         const totalSeconds = root.elapsedTime / 1000;
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = Math.floor(totalSeconds % 60);
         const milliseconds = Math.floor(root.elapsedTime % 1000);
+        const delimiter = vertical ? "\n" : ":";
 
         if (small == undefined || small == false) {
             return String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0') + "." + String(milliseconds).padStart(1, "0").substr(0, 1);
         }
-        let str = String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
+        let str = String(minutes).padStart(2, '0') + delimiter + String(seconds).padStart(2, '0');
         if (hours > 0) {
-            return String(hours).padStart(2, "0") + ":" + str;
+            return String(hours).padStart(2, "0") + delimiter + str;
         }
         return str;
     }
