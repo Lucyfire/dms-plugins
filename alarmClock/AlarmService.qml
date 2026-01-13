@@ -154,6 +154,12 @@ Singleton {
             alarm.setDay(currentDate.getDay());
         }
 
+        function remove() {
+            root.alarmList.splice(alarm.id, 1);
+            alarm.destroy()
+            root.updateMetadata();
+        }
+
         function shouldAlarm(): bool {
             const currentDate = new Date();
             if (alarm.snoozedTime != null) {

@@ -74,7 +74,7 @@ DankButton {
             checked: modelData.enabled
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             onClicked: {
-                modelData.setEnabled(checked);
+                modelData.setEnabled(!checked);
             }
         }
 
@@ -87,8 +87,7 @@ DankButton {
             textColor: Theme.error
             backgroundColor: "transparent"
             onClicked: {
-                AlarmService.alarmList.splice(root.index, 1);
-                AlarmService.updateMetadata();
+                modelData.remove();
             }
         }
     }
