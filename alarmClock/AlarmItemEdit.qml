@@ -13,8 +13,6 @@ DankFlickable {
 
     property AlarmService.Alarm alarmItem: null
 
-    property int h
-    property int m
     property bool monday: false
     property bool tuesday: false
     property bool wednesday: false
@@ -89,8 +87,9 @@ DankFlickable {
         repeatsToggler.itemAt(5).checked = item.repeats[6];
         repeatsToggler.itemAt(6).checked = item.repeats[0];
 
-        root.h = alarmItem.hour || 0;
-        root.m = alarmItem.minutes || 0;
+        clockPicker.hour = alarmItem.hour || 0;
+        clockPicker.minute = alarmItem.minutes || 0;
+        clockPicker.selectingHour = true;
     }
 
     function save() {
@@ -103,32 +102,28 @@ DankFlickable {
         alarmItem.repeats[5] = root.friday;
         alarmItem.repeats[6] = root.saturday;
 
-        alarmItem.setHour(hourText.text);
-        alarmItem.setMinutes(minuteText.text);
+        alarmItem.setHour(clockPicker.hour);
+        alarmItem.setMinutes(clockPicker.minute);
         alarmItem.setEnabled(true);
         root.back();
     }
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 0
+        spacing: Theme.spacingS
 
         RowLayout {
             Layout.fillWidth: true
 
             DankButton {
-                width: 30
-
                 iconName: "arrow_back"
-                horizontalPadding: Theme.spacingS
+                horizontalPadding: 0
                 iconSize: Theme.iconSizeLarge
                 textColor: Theme.error
                 buttonHeight: 32
                 backgroundColor: "transparent"
 
                 onClicked: {
-                    alarmItem.hour = root.h;
-                    alarmItem.minutes = root.m;
                     root.back();
                 }
             }
@@ -144,145 +139,114 @@ DankFlickable {
         }
 
         RowLayout {
-            Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
-            spacing: Theme.spacingL
-
-            ColumnLayout {
-                DankButton {
-                    width: 95
-                    text: "+"
-                    onClicked: alarmItem.setHour(alarmItem.hour + 1)
-                }
-                DankTextField {
-                    id: hourText
-                    text: String(alarmItem?.hour).padStart(2, "0")
-                    width: 95
-                    height: 60
-                    font.pixelSize: Theme.fontSizeXLarge
-                    Layout.alignment: Qt.AlignHCenter
-                    validator: IntValidator {
-                        bottom: 0
-                        top: 23
-                    }
-                    onAccepted: root.save()
-                }
-                DankButton {
-                    width: 95
-                    text: "−"
-                    onClicked: alarmItem.setHour(alarmItem.hour - 1)
-                }
-            }
-
-            StyledText {
-                text: ":"
-                font.pixelSize: 60
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            ColumnLayout {
-                DankButton {
-                    width: 95
-                    text: "+"
-                    onClicked: alarmItem.setMinutes(alarmItem.minutes + 1)
-                }
-                DankTextField {
-                    id: minuteText
-                    text: String(alarmItem?.minutes).padStart(2, "0")
-                    width: 95
-                    height: 60
-                    font.pixelSize: Theme.fontSizeXLarge
-                    Layout.alignment: Qt.AlignHCenter
-                    validator: IntValidator {
-                        bottom: 0
-                        top: 59
-                    }
-                    onAccepted: root.save()
-                }
-                DankButton {
-                    width: 95
-                    text: "−"
-                    onClicked: alarmItem.setMinutes(alarmItem.minutes - 1)
-                }
-            }
-        }
-
-        ColumnLayout {
-            Layout.fillWidth: true
+            Layout.fillHeight: true
             spacing: Theme.spacingM
-            StyledText {
-                text: "Repeat"
-                font.pixelSize: Theme.fontSizeLarge
-                color: Theme.surfaceText
+
+            ClockPicker {
+                id: clockPicker
+                Layout.alignment: Qt.AlignVCenter
+                hour: alarmItem?.hour ?? 0
+                minute: alarmItem?.minutes ?? 0
+                selectingHour: true
+
+                onHourSelected: function (h) {
+                    alarmItem.setHour(h);
+                }
+
+                onMinuteSelected: function (m) {
+                    alarmItem.setMinutes(m);
+                }
+
+                onTimeSelected: function (h, m) {
+                    alarmItem.setHour(h);
+                    alarmItem.setMinutes(m);
+                }
             }
 
-            RowLayout {
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 spacing: Theme.spacingS
-                Repeater {
-                    id: repeatsToggler
-                    model: [
-                        {
-                            text: "M",
-                            id: "1"
-                        },
-                        {
-                            text: "T",
-                            id: "2"
-                        },
-                        {
-                            text: "W",
-                            id: "3"
-                        },
-                        {
-                            text: "T",
-                            id: "4"
-                        },
-                        {
-                            text: "F",
-                            id: "5"
-                        },
-                        {
-                            text: "S",
-                            id: "6"
-                        },
-                        {
-                            text: "S",
-                            id: "0"
-                        },
-                    ]
-                    delegate: DankButton {
-                        required property var modelData
-                        property bool checked: root.getRepeat(modelData.id)
-                        text: modelData.text
-                        color: checked ? Theme.primary : Theme.primarySelected
-                        onClicked: {
-                            checked = !checked;
-                            root.setRepeat(modelData.id, checked);
+
+                DankTextField {
+                    id: nameText
+                    text: alarmItem?.name || ""
+                    placeholderText: "Name"
+                    font.pixelSize: Theme.fontSizeMedium
+                    onEditingFinished: {
+                        alarmItem.name = text;
+                    }
+                    onAccepted: root.save()
+                    Layout.fillWidth: true
+                }
+
+                StyledText {
+                    text: "Repeat"
+                    font.pixelSize: Theme.fontSizeLarge
+                    color: Theme.surfaceText
+                }
+
+                RowLayout {
+                    spacing: Theme.spacingXS
+                    Repeater {
+                        id: repeatsToggler
+                        model: [
+                            {
+                                text: "M",
+                                id: "1"
+                            },
+                            {
+                                text: "T",
+                                id: "2"
+                            },
+                            {
+                                text: "W",
+                                id: "3"
+                            },
+                            {
+                                text: "T",
+                                id: "4"
+                            },
+                            {
+                                text: "F",
+                                id: "5"
+                            },
+                            {
+                                text: "S",
+                                id: "6"
+                            },
+                            {
+                                text: "S",
+                                id: "0"
+                            }
+                        ]
+                        delegate: DankButton {
+                            required property var modelData
+                            property bool checked: root.getRepeat(modelData.id)
+                            text: modelData.text
+                            color: checked ? Theme.primary : Theme.primarySelected
+                            onClicked: {
+                                checked = !checked;
+                                root.setRepeat(modelData.id, checked);
+                            }
+                            Layout.preferredWidth: 28
+                            Layout.preferredHeight: 28
                         }
-                        Layout.preferredWidth: 32
-                        Layout.preferredHeight: 32
                     }
                 }
-            }
 
-            DankTextField {
-                id: nameText
-                text: alarmItem?.name || ""
-                placeholderText: "Name"
-                font.pixelSize: Theme.fontSizeMedium
-                onEditingFinished: {
-                    alarmItem.name = text;
+                Item {
+                    Layout.fillHeight: true
                 }
 
-                onAccepted: root.save()
-                Layout.fillWidth: true
-            }
-
-            DankButton {
-                text: "Remove Alarm"
-                Layout.fillWidth: true
-                color: Theme.error
-                onClicked: root.remove()
+                DankButton {
+                    text: "Remove Alarm"
+                    Layout.fillWidth: true
+                    Layout.bottomMargin: Theme.spacingM
+                    color: Theme.error
+                    onClicked: root.remove()
+                }
             }
         }
     }
