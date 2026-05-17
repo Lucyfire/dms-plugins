@@ -25,7 +25,7 @@ Singleton {
     }
 
     function toggleDisable(display: var): void {
-        Proc.runCommand("displaySettings:toggleDisplay", ["hyprctl", "keyword", `monitorv2[${display.name}]:disabled ${display.disabled ? "0" : "1"}`], (output, exitCode) => {
+        Proc.runCommand("displaySettings:toggleDisplay", ["hyprctl", "eval", `hl.monitor({output="${display.name}", disabled= ${display.disabled ? false : true}})`], (output, exitCode) => {
             if (exitCode != 0) {
                 return;
             }

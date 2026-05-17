@@ -37,8 +37,7 @@ None at the moment.
 ## Requirements
 
 - DankMaterialShell >= 0.6.2
-- Hyprland
-    - a monitorv2 definition in your hyprland.conf file.
+- Hyprland >= 0.55
 
 ## Compatibility
 
